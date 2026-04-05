@@ -1,0 +1,53 @@
+# dependencies
+node_modules/
+**/node_modules/
+**/.pnp
+**/.pnp.*
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/versions
+
+# testing
+/coverage
+**/coverage
+
+# next.js
+/frontend/.next/
+/frontend/out/
+/frontend/next-env.d.ts
+
+# production/build
+/build
+/dist
+**/build
+**/dist
+**/*.tsbuildinfo
+
+# logs
+*.log
+crawler.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# misc
+.DS_Store
+*.pem
+config.json
+data/
+
+# env files
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
+
+# Project specific
+/crawler/data/
+/indexer/data/
+/crawler/temp/
