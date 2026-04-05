@@ -17,6 +17,7 @@ node_modules/
 /frontend/.next/
 /frontend/out/
 /frontend/next-env.d.ts
+/frontend/next.config.ts
 
 # production/build
 /build
