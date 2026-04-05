@@ -51,3 +51,6 @@ data/
 /crawler/data/
 /indexer/data/
 /crawler/temp/
+
+# Orion CLI
+.orion/
