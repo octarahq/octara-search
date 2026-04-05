@@ -1,0 +1,1080 @@
+{
+  "australia": [
+    {
+      "name": "www.dailytelegraph.com.au",
+      "url": "https://www.dailytelegraph.com.au/news/breaking-news/rss"
+    },
+    {
+      "name": "www.smh.com.au",
+      "url": "https://www.smh.com.au/rss/feed.xml"
+    },
+    {
+      "name": "www.heraldsun.com.au",
+      "url": "https://www.heraldsun.com.au/news/breaking-news/rss"
+    },
+    {
+      "name": "www.abc.net.au",
+      "url": "https://www.abc.net.au/news/feed/1948/rss.xml"
+    },
+    {
+      "name": "www.theage.com.au",
+      "url": "https://www.theage.com.au/rss/feed.xml"
+    },
+    {
+      "name": "www.couriermail.com.au",
+      "url": "https://www.couriermail.com.au/rss"
+    },
+    {
+      "name": "www.perthnow.com.au",
+      "url": "https://www.perthnow.com.au/news/feed"
+    },
+    {
+      "name": "www.canberratimes.com.au",
+      "url": "https://www.canberratimes.com.au/rss.xml"
+    },
+    {
+      "name": "www.brisbanetimes.com.au",
+      "url": "https://www.brisbanetimes.com.au/rss/feed.xml"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "http://feeds.feedburner.com/IndependentAustralia"
+    },
+    {
+      "name": "www.businessnews.com.au",
+      "url": "https://www.businessnews.com.au/rssfeed/latest.rss"
+    },
+    {
+      "name": "indaily.com.au",
+      "url": "https://indaily.com.au/feed/"
+    },
+    {
+      "name": "www.themercury.com.au",
+      "url": "https://www.themercury.com.au/rss"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "https://feeds.feedburner.com/com/rCTl"
+    },
+    {
+      "name": "rssfeeds.9news.com",
+      "url": "http://rssfeeds.9news.com/kusa/home&x=1"
+    },
+    {
+      "name": "www.michaelwest.com.au",
+      "url": "https://www.michaelwest.com.au/feed/"
+    }
+  ],
+  "bangladesh": [
+    {
+      "name": "www.thedailystar.net",
+      "url": "https://www.thedailystar.net/frontpage/rss.xml"
+    },
+    {
+      "name": "www.bd24live.com",
+      "url": "https://www.bd24live.com/feed"
+    },
+    {
+      "name": "bdnews24.com",
+      "url": "https://bdnews24.com/?widgetName=rssfeed&widgetId=1150&getXmlFeed=true"
+    },
+    {
+      "name": "www.banglanews24.com",
+      "url": "https://www.banglanews24.com/rss/rss.xml"
+    },
+    {
+      "name": "www.jugantor.com",
+      "url": "https://www.jugantor.com/feed/rss.xml"
+    },
+    {
+      "name": "www.jagonews24.com",
+      "url": "https://www.jagonews24.com/rss/rss.xml"
+    },
+    {
+      "name": "www.kalerkantho.com",
+      "url": "https://www.kalerkantho.com/rss.xml"
+    },
+    {
+      "name": "www.prothomalo.com",
+      "url": "https://www.prothomalo.com/feed/"
+    }
+  ],
+  "brazil": [
+    {
+      "name": "Folha de S.Paulo - Em cima da hora - Principal",
+      "url": "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml"
+    },
+    {
+      "name": "Portal EBC - RSS",
+      "url": "http://www.ebc.com.br/rss/feed.xml"
+    },
+    {
+      "name": "R7 - Notícias",
+      "url": "https://noticias.r7.com/feed.xml"
+    },
+    {
+      "name": "UOL",
+      "url": "http://rss.home.uol.com.br/index.xml"
+    },
+    {
+      "name": "The Rio Times",
+      "url": "https://riotimesonline.com/feed/"
+    },
+    {
+      "name": "Brasil Wire",
+      "url": "http://www.brasilwire.com/feed/"
+    },
+    {
+      "name": "Jornal de Brasília",
+      "url": "https://jornaldebrasilia.com.br/feed/"
+    }
+  ],
+  "canada": [
+    {
+      "name": "www.cbc.ca",
+      "url": "https://www.cbc.ca/cmlink/rss-topstories"
+    },
+    {
+      "name": "www.ctvnews.ca",
+      "url": "https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009"
+    },
+    {
+      "name": "globalnews.ca",
+      "url": "https://globalnews.ca/feed/"
+    },
+    {
+      "name": "business.financialpost.com",
+      "url": "https://business.financialpost.com/feed/"
+    },
+    {
+      "name": "nationalpost.com",
+      "url": "https://nationalpost.com/feed/"
+    },
+    {
+      "name": "ottawacitizen.com",
+      "url": "https://ottawacitizen.com/feed/"
+    },
+    {
+      "name": "theprovince.com",
+      "url": "https://theprovince.com/feed/"
+    },
+    {
+      "name": "www.lapresse.ca",
+      "url": "https://www.lapresse.ca/actualites/rss"
+    },
+    {
+      "name": "www.thestar.com",
+      "url": "https://www.thestar.com/content/thestar/feed.RSSManagerServlet.articles.topstories.rss"
+    },
+    {
+      "name": "torontosun.com",
+      "url": "https://torontosun.com/category/news/feed"
+    }
+  ],
+  "france": [
+    {
+      "name": "www.france24.com",
+      "url": "https://www.france24.com/en/rss"
+    },
+    {
+      "name": "www.parisstaronline.com",
+      "url": "https://www.parisstaronline.com/feed"
+    },
+    {
+      "name": "www.lemonde.fr",
+      "url": "https://www.lemonde.fr/rss/une.xml"
+    },
+    {
+      "name": "www.francetvinfo.fr",
+      "url": "https://www.francetvinfo.fr/titres.rss"
+    },
+    {
+      "name": "www.huffingtonpost.fr",
+      "url": "https://www.huffingtonpost.fr/feeds/index.xml"
+    },
+    {
+      "name": "www.ladepeche.fr",
+      "url": "https://www.ladepeche.fr/rss.xml"
+    },
+    {
+      "name": "www.diplomatie.gouv.fr",
+      "url": "https://www.diplomatie.gouv.fr/spip.php?page=backend-fd&lang=en"
+    },
+    {
+      "name": "www.sudouest.fr",
+      "url": "https://www.sudouest.fr/essentiel/rss.xml"
+    },
+    {
+      "name": "www.ouest-france.fr",
+      "url": "https://www.ouest-france.fr/rss-en-continu.xml"
+    }
+  ],
+  "germany": [
+    {
+      "name": "ZEIT ONLINE | Nachrichten, Hintergründe und Debatten",
+      "url": "http://newsfeed.zeit.de/index"
+    },
+    {
+      "name": "FOCUS Online",
+      "url": "https://rss.focus.de/fol/XML/rss_folnews.xml"
+    },
+    {
+      "name": "Aktuell - FAZ.NET",
+      "url": "https://www.faz.net/rss/aktuell/"
+    },
+    {
+      "name": "tagesschau.de - Die Nachrichten der ARD",
+      "url": "http://www.tagesschau.de/xml/rss2"
+    },
+    {
+      "name": "Deutsche Welle",
+      "url": "https://rss.dw.com/rdf/rss-en-all"
+    }
+  ],
+  "hong kong sar china": [
+    {
+      "name": "www.hongkongfp.com",
+      "url": "https://www.hongkongfp.com/feed/"
+    },
+    {
+      "name": "www.thestandard.com.hk",
+      "url": "https://www.thestandard.com.hk/newsfeed/latest/news.xml"
+    },
+    {
+      "name": "hd.stheadline.com",
+      "url": "https://hd.stheadline.com/rss/news/daily/"
+    },
+    {
+      "name": "www.hket.com",
+      "url": "https://www.hket.com/rss/hongkong"
+    },
+    {
+      "name": "feeds.hongkongnews.net",
+      "url": "http://feeds.hongkongnews.net/rss/b82693edf38ebff8"
+    }
+  ],
+  "india": [
+    {
+      "name": "feeds.bbci.co.uk",
+      "url": "http://feeds.bbci.co.uk/news/world/asia/india/rss.xml"
+    },
+    {
+      "name": "www.theguardian.com",
+      "url": "https://www.theguardian.com/world/india/rss"
+    },
+    {
+      "name": "www.sebi.gov.in",
+      "url": "https://www.sebi.gov.in/sebirss.xml"
+    },
+    {
+      "name": "timesofindia.indiatimes.com",
+      "url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
+    },
+    {
+      "name": "www.thehindu.com",
+      "url": "https://www.thehindu.com/feeder/default.rss"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "https://feeds.feedburner.com/ndtvnews-top-stories"
+    },
+    {
+      "name": "www.indiatoday.in",
+      "url": "https://www.indiatoday.in/rss/home"
+    },
+    {
+      "name": "indianexpress.com",
+      "url": "http://indianexpress.com/print/front-page/feed/"
+    },
+    {
+      "name": "www.news18.com",
+      "url": "https://www.news18.com/rss/world.xml"
+    },
+    {
+      "name": "www.dnaindia.com",
+      "url": "https://www.dnaindia.com/feeds/india.xml"
+    },
+    {
+      "name": "www.firstpost.com",
+      "url": "https://www.firstpost.com/rss/india.xml"
+    },
+    {
+      "name": "www.business-standard.com",
+      "url": "https://www.business-standard.com/rss/home_page_top_stories.rss"
+    },
+    {
+      "name": "www.outlookindia.com",
+      "url": "https://www.outlookindia.com/rss/main/magazine"
+    },
+    {
+      "name": "www.freepressjournal.in",
+      "url": "https://www.freepressjournal.in/stories.rss"
+    },
+    {
+      "name": "www.deccanchronicle.com",
+      "url": "https://www.deccanchronicle.com/rss_feed/"
+    },
+    {
+      "name": "www.moneycontrol.com",
+      "url": "http://www.moneycontrol.com/rss/latestnews.xml"
+    },
+    {
+      "name": "economictimes.indiatimes.com",
+      "url": "https://economictimes.indiatimes.com/rssfeedsdefault.cms"
+    },
+    {
+      "name": "www.oneindia.com",
+      "url": "https://www.oneindia.com/rss/news-fb.xml"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "http://feeds.feedburner.com/ScrollinArticles.rss"
+    },
+    {
+      "name": "www.financialexpress.com",
+      "url": "https://www.financialexpress.com/feed/"
+    },
+    {
+      "name": "www.thehindubusinessline.com",
+      "url": "https://www.thehindubusinessline.com/feeder/default.rss"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "http://feeds.feedburner.com/techgenyz"
+    },
+    {
+      "name": "www.gujaratsamachar.com",
+      "url": "https://www.gujaratsamachar.com/rss/top-stories"
+    },
+    {
+      "name": "maharashtratimes.com",
+      "url": "https://maharashtratimes.com/rssfeedsdefault.cms"
+    },
+    {
+      "name": "www.loksatta.com",
+      "url": "https://www.loksatta.com/desh-videsh/feed/"
+    },
+    {
+      "name": "lokmat.news18.com",
+      "url": "https://lokmat.news18.com/rss/program.xml"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "https://feeds.feedburner.com/opindia"
+    },
+    {
+      "name": "theprint.in",
+      "url": "https://theprint.in/feed/"
+    },
+    {
+      "name": "prod-qt-images.s3.amazonaws.com",
+      "url": "https://prod-qt-images.s3.amazonaws.com/production/swarajya/feed.xml"
+    },
+    {
+      "name": "www.amarujala.com",
+      "url": "https://www.amarujala.com/rss/breaking-news.xml"
+    },
+    {
+      "name": "navbharattimes.indiatimes.com",
+      "url": "https://navbharattimes.indiatimes.com/rssfeedsdefault.cms"
+    },
+    {
+      "name": "api.patrika.com",
+      "url": "http://api.patrika.com/rss/india-news"
+    },
+    {
+      "name": "www.jansatta.com",
+      "url": "https://www.jansatta.com/feed/"
+    },
+    {
+      "name": "feed.livehindustan.com",
+      "url": "https://feed.livehindustan.com/rss/3127"
+    },
+    {
+      "name": "www.bhaskar.com",
+      "url": "https://www.bhaskar.com/rss-feed/1061/"
+    },
+    {
+      "name": "www.divyabhaskar.co.in",
+      "url": "https://www.divyabhaskar.co.in/rss-feed/1037/"
+    }
+  ],
+  "indonesia": [
+    {
+      "name": "Republika Online RSS Feed",
+      "url": "https://www.republika.co.id/rss/"
+    },
+    {
+      "name": "Tribunnews.com",
+      "url": "https://www.tribunnews.com/rss"
+    },
+    {
+      "name": "Merdeka.com",
+      "url": "https://www.merdeka.com/feed/"
+    },
+    {
+      "name": "Suara.com",
+      "url": "https://www.suara.com/rss"
+    }
+  ],
+  "iran": [
+    {
+      "name": "خبرگزاری باشگاه خبرنگاران | آخرین اخبار ایران و جهان | YJC",
+      "url": "https://www.yjc.ir/fa/rss/allnews"
+    },
+    {
+      "name": "تابناک | TABNAK",
+      "url": "https://www.tabnak.ir/fa/rss/allnews"
+    },
+    {
+      "name": "خبرگزاری ایسنا | صفحه اصلی |  ISNA News Agency",
+      "url": "https://www.isna.ir/rss"
+    },
+    {
+      "name": "خبرگزاری مهر | اخبار ایران و جهان | Mehr News Agency",
+      "url": "https://www.mehrnews.com/rss"
+    },
+    {
+      "name": "خبرگزاری خبرآنلاین - آخرین اخبار ایران و جهان | Khabaronline",
+      "url": "https://www.khabaronline.ir/rss"
+    },
+    {
+      "name": "اخبار ایران و جهان",
+      "url": "https://www.tasnimnews.com/fa/rss/feed/0/8/0/%D9%85%D9%87%D9%85%D8%AA%D8%B1%DB%8C%D9%86-%D8%A7%D8%AE%D8%A8%D8%A7%D8%B1-%D8%AA%D8%B3%D9%86%DB%8C%D9%85"
+    },
+    {
+      "name": "عصر ايران",
+      "url": "https://www.asriran.com/fa/rss/allnews"
+    }
+  ],
+  "ireland": [
+    {
+      "name": "TheJournal.ie",
+      "url": "https://www.thejournal.ie/feed/"
+    },
+    {
+      "name": "All: BreakingNews.ie",
+      "url": "https://feeds.breakingnews.ie/bntopstories"
+    },
+    {
+      "name": "The42",
+      "url": "https://www.the42.ie/feed/"
+    },
+    {
+      "name": "IrishExaminer.com",
+      "url": "https://feeds.feedburner.com/ietopstories"
+    },
+    {
+      "name": "IrishCentral.com - Top Stories",
+      "url": "https://feeds.feedburner.com/IrishCentral"
+    },
+    {
+      "name": "Irish Mirror - Home",
+      "url": "https://www.irishmirror.ie/?service=rss"
+    }
+  ],
+  "italy": [
+    {
+      "name": "www.ansa.it",
+      "url": "https://www.ansa.it/sito/ansait_rss.xml"
+    },
+    {
+      "name": "feeds.thelocal.com",
+      "url": "https://feeds.thelocal.com/rss/it"
+    },
+    {
+      "name": "www.diariodelweb.it",
+      "url": "https://www.diariodelweb.it/rss/home/"
+    },
+    {
+      "name": "www.fanpage.it",
+      "url": "https://www.fanpage.it/feed/"
+    },
+    {
+      "name": "www.liberoquotidiano.it",
+      "url": "https://www.liberoquotidiano.it/rss.xml"
+    },
+    {
+      "name": "www.ilmattino.it",
+      "url": "https://www.ilmattino.it/?sez=XML&args&p=search&args[box]=Home&limit=20&layout=rss"
+    },
+    {
+      "name": "rss.adnkronos.com",
+      "url": "http://rss.adnkronos.com/RSS_PrimaPagina.xml"
+    },
+    {
+      "name": "www.milannews.it",
+      "url": "https://www.milannews.it/rss/"
+    },
+    {
+      "name": "www.internazionale.it",
+      "url": "https://www.internazionale.it/sitemaps/rss.xml"
+    },
+    {
+      "name": "www.panorama.it",
+      "url": "https://www.panorama.it/feeds/feed.rss"
+    },
+    {
+      "name": "www.theguardian.com",
+      "url": "https://www.theguardian.com/world/italy/rss"
+    },
+    {
+      "name": "www.repubblica.it",
+      "url": "https://www.repubblica.it/rss/homepage/rss2.0.xml"
+    },
+    {
+      "name": "www.ilpost.it",
+      "url": "https://www.ilpost.it/feed/"
+    }
+  ],
+  "japan": [
+    {
+      "name": "Japan Times latest articles",
+      "url": "https://www.japantimes.co.jp/feed/topstories/"
+    },
+    {
+      "name": "Japan Today",
+      "url": "https://japantoday.com/feed"
+    },
+    {
+      "name": "News On Japan",
+      "url": "http://www.newsonjapan.com/rss/top.xml"
+    },
+    {
+      "name": "All - Kyodo News+",
+      "url": "https://english.kyodonews.net/rss/all.xml"
+    },
+    {
+      "name": "BRIDGE（ブリッジ）テクノロジー＆スタートアップ情報",
+      "url": "http://feeds.feedburner.com/SdJapan"
+    },
+    {
+      "name": "NYT > Japan",
+      "url": "https://www.nytimes.com/svc/collections/v1/publish/http://www.nytimes.com/topic/destination/japan/rss.xml"
+    },
+    {
+      "name": "ライブドアニュース - 主要トピックス",
+      "url": "https://news.livedoor.com/topics/rss/top.xml"
+    },
+    {
+      "name": "朝日新聞デジタル",
+      "url": "http://rss.asahi.com/rss/asahi/newsheadlines.rdf"
+    }
+  ],
+  "mexico": [
+    {
+      "name": "www.theguardian.com",
+      "url": "https://www.theguardian.com/world/mexico/rss"
+    },
+    {
+      "name": "www.excelsior.com.mx",
+      "url": "https://www.excelsior.com.mx/rss.xml"
+    },
+    {
+      "name": "www.reforma.com",
+      "url": "https://www.reforma.com/rss/portada.xml"
+    },
+    {
+      "name": "vanguardia.com.mx",
+      "url": "https://vanguardia.com.mx/rss.xml"
+    },
+    {
+      "name": "www.elsiglodetorreon.com.mx",
+      "url": "https://www.elsiglodetorreon.com.mx/index.xml"
+    },
+    {
+      "name": "www.elfinanciero.com.mx",
+      "url": "https://www.elfinanciero.com.mx/arc/outboundfeeds/rss/?outputType=xml"
+    },
+    {
+      "name": "www.elnorte.com",
+      "url": "https://www.elnorte.com/rss/portada.xml"
+    },
+    {
+      "name": "www.informador.mx",
+      "url": "https://www.informador.mx/rss/ultimas-noticias.xml"
+    },
+    {
+      "name": "www.24-horas.mx",
+      "url": "https://www.24-horas.mx/feed/"
+    },
+    {
+      "name": "quequi.com.mx",
+      "url": "https://quequi.com.mx/feed/"
+    },
+    {
+      "name": "www.debate.com.mx",
+      "url": "https://www.debate.com.mx/rss/feed.xml"
+    },
+    {
+      "name": "mexiconewsdaily.com",
+      "url": "https://mexiconewsdaily.com/feed/"
+    },
+    {
+      "name": "diario.mx",
+      "url": "https://diario.mx/jrz/media/sitemaps/rss.xml"
+    },
+    {
+      "name": "8columnas.com.mx",
+      "url": "https://8columnas.com.mx/feed/"
+    },
+    {
+      "name": "www.eluniversal.com.mx",
+      "url": "https://www.eluniversal.com.mx/seccion/1671/rss.xml"
+    }
+  ],
+  "myanmar (burma)": [
+    {
+      "name": "Myanmar Gazette News Media Forum Network",
+      "url": "http://myanmargazette.net/feed"
+    },
+    {
+      "name": "DVB Multimedia Group",
+      "url": "http://www.dvb.no/feed"
+    },
+    {
+      "name": "THIT HTOO LWIN (Daily News)",
+      "url": "http://www.thithtoolwin.com/feeds/posts/default"
+    }
+  ],
+  "nigeria": [
+    {
+      "name": "saharareporters.com",
+      "url": "http://saharareporters.com/feeds/latest/feed"
+    },
+    {
+      "name": "www.nigerianbulletin.com",
+      "url": "https://www.nigerianbulletin.com/forums/-/index.rss"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "http://feeds.feedburner.com/Nigerianeye"
+    },
+    {
+      "name": "www.legit.ng",
+      "url": "https://www.legit.ng/rss/all.rss"
+    },
+    {
+      "name": "thenationonlineng.net",
+      "url": "https://thenationonlineng.net/feed/"
+    },
+    {
+      "name": "dailypost.ng",
+      "url": "https://dailypost.ng/feed"
+    },
+    {
+      "name": "www.premiumtimesng.com",
+      "url": "https://www.premiumtimesng.com/feed"
+    },
+    {
+      "name": "www.informationng.com",
+      "url": "https://www.informationng.com/feed"
+    },
+    {
+      "name": "guardian.ng",
+      "url": "https://guardian.ng/feed/"
+    },
+    {
+      "name": "tribuneonlineng.com",
+      "url": "http://tribuneonlineng.com/feed/"
+    }
+  ],
+  "pakistan": [
+    {
+      "name": "The Express Tribune",
+      "url": "https://tribune.com.pk/feed/home"
+    },
+    {
+      "name": "The Nation - Top Stories",
+      "url": "https://nation.com.pk/rss/top-stories"
+    },
+    {
+      "name": "قومی خبریں",
+      "url": "https://jang.com.pk/rss/1/1"
+    },
+    {
+      "name": "The News International - Pakistan",
+      "url": "https://www.thenews.com.pk/rss/1/1"
+    },
+    {
+      "name": "News Blog",
+      "url": "https://newsnblogs.com/feed/"
+    },
+    {
+      "name": "UrduPoint.com All Urdu News",
+      "url": "https://www.urdupoint.com/rss/urdupoint.rss"
+    },
+    {
+      "name": "ایکسپریس اردو",
+      "url": "https://www.express.pk/feed/"
+    }
+  ],
+  "philippines": [
+    {
+      "name": "www.inquirer.net",
+      "url": "https://www.inquirer.net/fullfeed"
+    },
+    {
+      "name": "pia.gov.ph",
+      "url": "https://pia.gov.ph/news/feed.rss"
+    },
+    {
+      "name": "www.interaksyon.com",
+      "url": "https://www.interaksyon.com/feed/"
+    },
+    {
+      "name": "www.manilatimes.net",
+      "url": "https://www.manilatimes.net/rssfeed/"
+    },
+    {
+      "name": "www.philstar.com",
+      "url": "https://www.philstar.com/rss/headlines"
+    },
+    {
+      "name": "www.bworldonline.com",
+      "url": "https://www.bworldonline.com/feed/"
+    },
+    {
+      "name": "www.sunstar.com.ph",
+      "url": "https://www.sunstar.com.ph/rssFeed/selected"
+    },
+    {
+      "name": "www.philnews.xyz",
+      "url": "https://www.philnews.xyz/feeds/posts/default?alt=rss"
+    },
+    {
+      "name": "manilastandard.net",
+      "url": "https://manilastandard.net/feed/all"
+    },
+    {
+      "name": "data.gmanews.tv",
+      "url": "https://data.gmanews.tv/gno/rss/news/feed.xml"
+    },
+    {
+      "name": "currentph.com",
+      "url": "https://currentph.com/feed/"
+    },
+    {
+      "name": "www.topgear.com.ph",
+      "url": "https://www.topgear.com.ph/feed/rss1"
+    },
+    {
+      "name": "www.eaglenews.ph",
+      "url": "https://www.eaglenews.ph/feed/"
+    },
+    {
+      "name": "www.unbox.ph",
+      "url": "https://www.unbox.ph/feed/"
+    },
+    {
+      "name": "tempo.com.ph",
+      "url": "http://tempo.com.ph/feed/"
+    },
+    {
+      "name": "tonite.abante.com.ph",
+      "url": "https://tonite.abante.com.ph/feed/"
+    },
+    {
+      "name": "businessmirror.com.ph",
+      "url": "https://businessmirror.com.ph/feed/"
+    },
+    {
+      "name": "www.pna.gov.ph",
+      "url": "https://www.pna.gov.ph/latest.rss"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "http://feeds.feedburner.com/Techpinas"
+    },
+    {
+      "name": "www.bicolstandard.com",
+      "url": "http://www.bicolstandard.com/feeds/posts/default?alt=rss"
+    }
+  ],
+  "poland": [
+    {
+      "name": "Najnowsze",
+      "url": "http://feeds.feedburner.com/wPolitycepl"
+    },
+    {
+      "name": "Newsweek Polska",
+      "url": "https://www.newsweek.pl/rss.xml"
+    },
+    {
+      "name": "Dziennik.pl Dziennik - dziennik.pl",
+      "url": "http://rss.dziennik.pl/Dziennik-PL/"
+    },
+    {
+      "name": "www.wirtualnemedia.pl",
+      "url": "https://www.wirtualnemedia.pl/rss/wirtualnemedia_rss.xml"
+    },
+    {
+      "name": "GazetaPrawna.pl - biznes, podatki, prawo, finanse, wiadomości, praca",
+      "url": "http://rss.gazetaprawna.pl/GazetaPrawna"
+    },
+    {
+      "name": "https://www.rp.pl",
+      "url": "https://www.rp.pl/rss/1019"
+    },
+    {
+      "name": "Polska Agencja Prasowa SA",
+      "url": "https://www.pap.pl/rss.xml"
+    },
+    {
+      "name": "RMF24.pl",
+      "url": "https://www.rmf24.pl/feed"
+    }
+  ],
+  "russia": [
+    {
+      "name": "lenta.ru",
+      "url": "https://lenta.ru/rss"
+    },
+    {
+      "name": "www.vesti.ru",
+      "url": "https://www.vesti.ru/vesti.rss"
+    },
+    {
+      "name": "www.gazeta.ru",
+      "url": "https://www.gazeta.ru/export/rss/first.xml"
+    },
+    {
+      "name": "www.mk.ru",
+      "url": "https://www.mk.ru/rss/index.xml"
+    },
+    {
+      "name": "rg.ru",
+      "url": "https://rg.ru/xml/index.xml"
+    },
+    {
+      "name": "rss.newsru.com",
+      "url": "https://rss.newsru.com/top/big/"
+    },
+    {
+      "name": "www.rt.com",
+      "url": "https://www.rt.com/rss/"
+    },
+    {
+      "name": "meduza.io",
+      "url": "https://meduza.io/rss/all"
+    },
+    {
+      "name": "russia-insider.com",
+      "url": "https://russia-insider.com/en/all-content/rss"
+    },
+    {
+      "name": "tass.com",
+      "url": "http://tass.com/rss/v2.xml"
+    },
+    {
+      "name": "www.themoscowtimes.com",
+      "url": "https://www.themoscowtimes.com/rss/news"
+    },
+    {
+      "name": "www.kommersant.ru",
+      "url": "https://www.kommersant.ru/RSS/main.xml"
+    },
+    {
+      "name": "www.pravdareport.com",
+      "url": "https://www.pravdareport.com/export.xml"
+    }
+  ],
+  "south africa": [
+    {
+      "name": "SowetanLIVE",
+      "url": "https://www.sowetanlive.co.za/rss/?publication=sowetan-live"
+    },
+    {
+      "name": "TechCentral",
+      "url": "https://techcentral.co.za/feed"
+    },
+    {
+      "name": "News24 Top Stories",
+      "url": "http://feeds.news24.com/articles/news24/TopStories/rss"
+    },
+    {
+      "name": "Eyewitness News | Latest News",
+      "url": "https://ewn.co.za/RSS%20Feeds/Latest%20News"
+    },
+    {
+      "name": "The Citizen",
+      "url": "https://citizen.co.za/feed/"
+    },
+    {
+      "name": "Daily Maverick",
+      "url": "https://www.dailymaverick.co.za/dmrss/"
+    },
+    {
+      "name": "Moneyweb",
+      "url": "https://www.moneyweb.co.za/feed/"
+    },
+    {
+      "name": "IOL section feed for News",
+      "url": "http://rss.iol.io/iol/news"
+    },
+    {
+      "name": "TimesLIVE",
+      "url": "https://www.timeslive.co.za/rss/"
+    },
+    {
+      "name": "The South African",
+      "url": "https://www.thesouthafrican.com/feed/"
+    },
+    {
+      "name": "Axios",
+      "url": "https://api.axios.com/feed/"
+    }
+  ],
+  "spain": [
+    {
+      "name": "The Local",
+      "url": "https://feeds.thelocal.com/rss/es"
+    },
+    {
+      "name": "EL PAÍS: el periódico global",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada"
+    },
+    {
+      "name": "España",
+      "url": "https://rss.elconfidencial.com/espana/"
+    },
+    {
+      "name": "ElDiario.es - ElDiario.es",
+      "url": "https://www.eldiario.es/rss/"
+    },
+    {
+      "name": "Portada // expansion",
+      "url": "https://e00-expansion.uecdn.es/rss/portada.xml"
+    },
+    {
+      "name": "El Periódico - portada",
+      "url": "https://www.elperiodico.com/es/rss/rss_portada.xml"
+    },
+    {
+      "name": "huffingtonpost.es",
+      "url": "https://www.huffingtonpost.es/feeds/index.xml"
+    },
+    {
+      "name": "Euro Weekly News Spain",
+      "url": "https://www.euroweeklynews.com/feed/"
+    },
+    {
+      "name": "Agencia EFE | www.efe.com | English edition",
+      "url": "https://www.efe.com/efe/english/4/rss"
+    }
+  ],
+  "ukraine": [
+    {
+      "name": "News Agency UNIAN",
+      "url": "https://rss.unian.net/site/news_eng.rss"
+    },
+    {
+      "name": "ТЕЛЕГРАФ - последние новости Украины и мира",
+      "url": "https://telegraf.com.ua/yandex-feed/"
+    },
+    {
+      "name": "Последние новости на сайте korrespondent.net",
+      "url": "http://k.img.com.ua/rss/ru/all_news2.0.xml"
+    },
+    {
+      "name": "Цензор.НЕТ - Новости",
+      "url": "https://censor.net.ua/includes/news_ru.xml"
+    },
+    {
+      "name": "Новини на tsn.ua",
+      "url": "https://tsn.ua/rss/full.rss"
+    },
+    {
+      "name": "Українська правда",
+      "url": "https://www.pravda.com.ua/rss/"
+    },
+    {
+      "name": "Гордон - Самые популярные материалы",
+      "url": "https://gordonua.com/xml/rss_category/top.html"
+    },
+    {
+      "name": "НВ",
+      "url": "https://nv.ua/rss/all.xml"
+    },
+    {
+      "name": "Информационное агентство УНИАН",
+      "url": "https://rss.unian.net/site/news_rus.rss"
+    },
+    {
+      "name": "Еспресо - український погляд на світ!",
+      "url": "https://espreso.tv/rss"
+    },
+    {
+      "name": "Gazeta.ua",
+      "url": "https://gazeta.ua/rss"
+    },
+    {
+      "name": "Вести.ua",
+      "url": "https://vesti.ua/feeds/partners"
+    }
+  ],
+  "united kingdom": [
+    {
+      "name": "feeds.bbci.co.uk",
+      "url": "http://feeds.bbci.co.uk/news/rss.xml"
+    },
+    {
+      "name": "www.theguardian.com",
+      "url": "https://www.theguardian.com/world/rss"
+    },
+    {
+      "name": "www.dailymail.co.uk",
+      "url": "https://www.dailymail.co.uk/home/index.rss"
+    },
+    {
+      "name": "www.independent.co.uk",
+      "url": "http://www.independent.co.uk/news/uk/rss"
+    },
+    {
+      "name": "feeds.feedburner.com",
+      "url": "http://feeds.feedburner.com/daily-express-news-showbiz"
+    }
+  ],
+  "united states": [
+    {
+      "name": "www.huffpost.com",
+      "url": "https://www.huffpost.com/section/world-news/feed"
+    },
+    {
+      "name": "rss.nytimes.com",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+    },
+    {
+      "name": "feeds.foxnews.com",
+      "url": "http://feeds.foxnews.com/foxnews/latest"
+    },
+    {
+      "name": "feeds.washingtonpost.com",
+      "url": "http://feeds.washingtonpost.com/rss/world"
+    },
+    {
+      "name": "feeds.a.dj.com",
+      "url": "https://feeds.a.dj.com/rss/RSSWorldNews.xml"
+    },
+    {
+      "name": "www.latimes.com",
+      "url": "https://www.latimes.com/world-nation/rss2.0.xml"
+    },
+    {
+      "name": "rss.cnn.com",
+      "url": "http://rss.cnn.com/rss/edition.rss"
+    },
+    {
+      "name": "news.yahoo.com",
+      "url": "https://news.yahoo.com/rss/mostviewed"
+    },
+    {
+      "name": "www.cnbc.com",
+      "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+    },
+    {
+      "name": "rss.politico.com",
+      "url": "https://rss.politico.com/playbook.xml"
+    }
+  ]
+}
