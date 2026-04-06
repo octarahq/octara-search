@@ -80,11 +80,14 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
               </Link>
             ))}
           </nav>
-          <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-emerald-500/20 bg-zinc-800 flex items-center justify-center cursor-pointer hover:ring-emerald-500/40 transition-all">
+          <Link
+            href="/account"
+            className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-emerald-500/20 bg-zinc-800 flex items-center justify-center cursor-pointer hover:ring-emerald-500/40 transition-all"
+          >
             <span className="material-symbols-outlined text-zinc-400 text-xl md:text-2xl">
               account_circle
             </span>
-          </div>
+          </Link>
         </div>
       </nav>
 

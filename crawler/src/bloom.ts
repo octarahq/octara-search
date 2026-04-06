@@ -22,10 +22,14 @@ export class BloomManager {
     }
   }
 
-  save() {
-    fs.mkdirSync(path.dirname(BLOOM_PATH), { recursive: true });
-    const json = this.filter.saveAsJSON();
-    fs.writeFileSync(BLOOM_PATH, JSON.stringify(json));
+  async save() {
+    try {
+      await fs.promises.mkdir(path.dirname(BLOOM_PATH), { recursive: true });
+      const json = this.filter.saveAsJSON();
+      await fs.promises.writeFile(BLOOM_PATH, JSON.stringify(json));
+    } catch (e) {
+      console.error("Failed to save bloom filter:", e);
+    }
   }
 
   has(url: string) {

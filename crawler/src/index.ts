@@ -16,15 +16,17 @@ import { DbBuffer } from "./buffer";
 import { DomainLimiter } from "./limiter";
 import { HostCache } from "./host-cache";
 
-const SEED_URLS: string[] = [];
+const SEED_URLS: string[] = ["https://www.allocine.fr/"];
 const MAX_PAGES_TO_CRAWL = Number.MAX_SAFE_INTEGER;
-const CONCURRENCY = 15;
-const FETCHES_PER_MIN_PER_DOMAIN = 100;
+const CONCURRENCY = 150;
+const FETCHES_PER_MIN_PER_DOMAIN = 1200;
+
 const FRESH_START = false;
 const MONITOR_PORT = Number(process.env.CRAWLER_MONITOR_PORT) || 3005;
 const AUTH_KEY = process.env.CRAWLER_AUTH_KEY;
 const REFRESH_INTERVAL_HOURS = 24;
-const ALLOWED_DOMAIN = "gouv.fr";
+const ALLOWED_DOMAIN = "";
+
 const FORCED_CRAWL_DEPTH = 5;
 const IDLE_START = process.env.IDLE_START === "true";
 
@@ -62,10 +64,33 @@ function broadcastStats() {
 }
 
 function isUrlAllowed(url: string, allowed: string): boolean {
-  if (!allowed) return true;
   try {
-    const host = new URL(url).hostname;
-    return host === allowed || host.endsWith("." + allowed);
+    const u = new URL(url);
+    if (allowed) {
+      const host = u.hostname;
+      const isDomainAllowed = host === allowed || host.endsWith("." + allowed);
+      if (!isDomainAllowed) return false;
+    }
+
+    const forbiddenExts = [
+      ".pdf",
+      ".zip",
+      ".jpg",
+      ".png",
+      ".gif",
+      ".docx",
+      ".xlsx",
+      ".pptx",
+      ".mp4",
+      ".mp3",
+    ];
+    const lowercaseUrl = url.toLowerCase();
+    if (forbiddenExts.some((ext) => lowercaseUrl.endsWith(ext))) return false;
+
+    const segments = u.pathname.split("/").filter((s) => s.length > 0);
+    if (segments.length > 2) return false;
+
+    return true;
   } catch {
     return false;
   }
@@ -78,7 +103,8 @@ function getDisplayString(queueLength: number) {
   const cpuLoad = os.loadavg()[0];
 
   let statusText = "\x1b[32mEN COURS\x1b[0m";
-  if (isPaused) statusText = "\x1b[33mPAUSE\x1b[0m";
+  if (shouldStop) statusText = "\x1b[31mARRÊT EN COURS...\x1b[0m";
+  else if (isPaused) statusText = "\x1b[33mPAUSE\x1b[0m";
   else if (isIdling) statusText = "\x1b[35mEN ATTENTE\x1b[0m";
 
   let output = "\x1b[2J\x1b[H";
@@ -119,14 +145,17 @@ function setupRemoteMonitor(queueProvider: () => number) {
       }
 
       const cmd = raw.toLowerCase();
-      if (cmd === "p") {
+      if (cmd.includes("p")) {
         isPaused = !isPaused;
         broadcastStats();
       }
-      if (cmd === "s") {
+      if (cmd.includes("s")) {
         handleStop("Moniteur");
         broadcastStats();
+
+        socket.destroy();
       }
+
       if (cmd.startsWith("crawl ")) {
         const url = cmd.split(" ").slice(1).join(" ").trim();
         if (url) {
@@ -175,14 +204,9 @@ async function start() {
     console.log(
       "\x1b[35m[Crawler] Mode IDLE activé. Le crawler attend des instructions...\x1b[0m",
     );
-    // On ne charge pas la queue ni les seeds pour rester idle
   } else {
     bloom.load(false);
     await queue.load(SEED_URLS, FRESH_START);
-    if (!FRESH_START) {
-      queue.resetDepths(FORCED_CRAWL_DEPTH + 1);
-      SEED_URLS.forEach((u) => queue.enqueue(u, 0, true));
-    }
   }
 
   const monitorServer = setupRemoteMonitor(() => queue.length());
@@ -270,24 +294,39 @@ async function start() {
             }
 
             const pendingSitemaps = hostCache.getSitemaps(domain);
-            while (pendingSitemaps.length > 0) {
+            let sitemapsProcessedInThisTurn = 0;
+            while (
+              pendingSitemaps.length > 0 &&
+              sitemapsProcessedInThisTurn < 500
+            ) {
               const sUrl = pendingSitemaps.shift()!;
               if (!hostCache.isSitemapProcessed(sUrl)) {
                 try {
                   const sXml = await fetchPage(sUrl);
                   const { urls, nestedSitemaps } = parseSitemap(sXml);
+
                   urls.forEach((u) => {
                     const nu = normalizeUrl(u);
                     if (isUrlAllowed(nu, ALLOWED_DOMAIN) && !bloom.has(nu)) {
                       queue.enqueue(nu, depth + 1);
                     }
                   });
-                  nestedSitemaps.forEach((nu) => {
+
+                  const limitedSitemaps = nestedSitemaps.slice(0, 50);
+                  limitedSitemaps.forEach((nu) => {
                     const m = normalizeUrl(nu);
-                    if (!pendingSitemaps.includes(m)) pendingSitemaps.push(m);
+
+                    if (
+                      isUrlAllowed(m, ALLOWED_DOMAIN) &&
+                      !pendingSitemaps.includes(m)
+                    ) {
+                      pendingSitemaps.push(m);
+                    }
                   });
+
                   hostCache.markSitemapProcessed(sUrl);
                   hostCache.addSitemaps(domain, [sUrl]);
+                  sitemapsProcessedInThisTurn++;
                 } catch (se) {}
               }
             }
@@ -306,11 +345,23 @@ async function start() {
             const html = await fetchPage(normUrl);
             const parsed = parseHtml(html, normUrl);
             if (parsed.sitemaps.length > 0) {
-              hostCache.addSitemaps(domain, parsed.sitemaps);
+              hostCache.addSitemaps(domain, parsed.sitemaps.slice(0, 50));
             }
+
             parsed.links.forEach((l) => {
-              if (isUrlAllowed(l, ALLOWED_DOMAIN) && !bloom.has(l)) {
-                queue.enqueue(l, depth + 1);
+              if (isUrlAllowed(l, ALLOWED_DOMAIN)) {
+                const linkDomain = limiter.getHostname(l);
+
+                if (
+                  linkDomain !== domain &&
+                  !hostCache.getSitemaps(linkDomain).length
+                ) {
+                  queue.enqueue(`https://${linkDomain}/`, 0);
+                }
+
+                if (!bloom.has(l)) {
+                  queue.enqueue(l, depth + 1);
+                }
               }
             });
 
@@ -343,10 +394,14 @@ async function start() {
         await new Promise((r) => setTimeout(r, 50));
       }
 
-      if (pagesCrawled % 100 === 0 && pagesCrawled > 0) {
-        bloom.save();
-        queue.save();
-        hostCache.save();
+      if (pagesCrawled % 5000 === 0 && pagesCrawled > 0) {
+        setTimeout(async () => {
+          try {
+            bloom.save();
+            queue.save();
+            hostCache.save();
+          } catch (e) {}
+        }, 0);
       }
     }
 
@@ -364,8 +419,15 @@ async function start() {
       );
       try {
         const rootDir = path.resolve(__dirname, "../../");
-        execSync("npm run start:indexer", { cwd: rootDir, stdio: "inherit" });
-        console.log("\x1b[1m\x1b[32m[Indexer] Indexation terminée.\x1b[0m");
+        const { spawn } = require("node:child_process");
+        spawn("npm", ["run", "start:indexer"], {
+          cwd: rootDir,
+          stdio: "ignore",
+          detached: true,
+        }).unref();
+        console.log(
+          "\x1b[1m\x1b[32m[Indexer] Indexation lancée en arrière-plan.\x1b[0m",
+        );
       } catch (ie) {
         console.error("[Indexer] Échec de l'indexation automatique:", ie);
       }

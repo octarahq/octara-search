@@ -2,8 +2,48 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Octara Search",
-  description: "Curation de l'intelligence mondiale",
+  title: {
+    default: "Octara - Moteur de recherche intelligent & rapide",
+    template: "%s | Octara",
+  },
+  description:
+    "Octara est un moteur de recherche nouvelle génération, ultra-rapide et respectueux de la vie privée. Explorez le web proprement.",
+  metadataBase: new URL("https://search.octara.xyz"),
+  keywords: [
+    "moteur de recherche",
+    "search engine",
+    "privacy",
+    "fast search",
+    "octara",
+  ],
+  authors: [{ name: "Octara Team" }],
+  creator: "Octara",
+  publisher: "Octara",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: "https://search.octara.xyz",
+    siteName: "Octara Search",
+    title: "Octara - Moteur de recherche intelligent",
+    description: "Découvrez une nouvelle façon d'explorer le web avec Octara.",
+    images: [
+      {
+        url: "/favicon.ico",
+        width: 1200,
+        height: 630,
+        alt: "Octara Search",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Octara Search",
+    description: "Moteur de recherche intelligent & ultra-rapide.",
+    images: ["/favicon.ico"],
+  },
 };
 
 export default function RootLayout({

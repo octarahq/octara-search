@@ -1,8 +1,8 @@
+import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
-import readline from "node:readline";
 
-const QUEUE_PATH = path.resolve(__dirname, "../../data/queue.json");
+const DB_PATH = path.resolve(__dirname, "../../data/queue.sqlite");
 
 export interface QueueItem {
   url: string;
@@ -10,120 +10,126 @@ export interface QueueItem {
 }
 
 export class QueueManager {
-  private queue: QueueItem[] = [];
-  private head: number = 0;
+  private db: Database.Database;
+
+  constructor() {
+    const dataDir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    this.db = new Database(DB_PATH);
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS queue (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        url TEXT UNIQUE,
+        domain TEXT,
+        depth INTEGER
+      )
+    `);
+
+    this.db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_queue_domain ON queue(domain)`,
+    );
+    this.db.exec(`CREATE INDEX IF NOT EXISTS idx_queue_id ON queue(id)`);
+  }
 
   async load(seedUrls: string[], fresh: boolean = false) {
-    if (fresh || !fs.existsSync(QUEUE_PATH)) {
-      this.queue = seedUrls.map((url) => ({ url, depth: 0 }));
-      this.head = 0;
-      console.log(`Queue initialized with ${this.queue.length} seed URLs.`);
+    if (fresh) {
+      console.log("Fresh start: Clearing queue database.");
+      this.db.prepare("DELETE FROM queue").run();
+      for (const url of seedUrls) {
+        this.enqueue(url, 0);
+      }
       return;
     }
 
-    try {
-      const stats = fs.statSync(QUEUE_PATH);
-      if (stats.size < 50 * 1024 * 1024) {
-        const data = fs.readFileSync(QUEUE_PATH, "utf-8");
-        const parsed = JSON.parse(data);
-        this.queue = parsed.map((item: any) => {
-          if (typeof item === "string") return { url: item, depth: 0 };
-          return item as QueueItem;
-        });
-        console.log(
-          `Queue loaded with ${this.queue.length} items (JSON.parse).`,
-        );
-      } else {
-        const fileStream = fs.createReadStream(QUEUE_PATH);
-        const rl = readline.createInterface({
-          input: fileStream,
-          crlfDelay: Infinity,
-        });
-
-        this.queue = [];
-        for await (const line of rl) {
-          try {
-            const cleanLine = line.trim().replace(/,$/, "");
-            if (cleanLine === "[" || cleanLine === "]") continue;
-            const item = JSON.parse(cleanLine);
-            if (typeof item === "string") {
-              this.queue.push({ url: item, depth: 0 });
-            } else {
-              this.queue.push(item);
-            }
-          } catch (e) {}
-        }
-        console.log(
-          `Queue loaded with ${this.queue.length} items (Streaming).`,
-        );
-      }
-      this.head = 0;
-
-      if (this.queue.length === 0) {
-        this.queue = seedUrls.map((url) => ({ url, depth: 0 }));
-        console.log(`Queue was empty, falling back to seeds.`);
-      }
-    } catch (e) {
-      console.error("Error loading queue, fallback to seeds.", e);
-      this.queue = seedUrls.map((url) => ({ url, depth: 0 }));
-      this.head = 0;
-    }
-  }
-
-  save() {
-    fs.mkdirSync(path.dirname(QUEUE_PATH), { recursive: true });
-
-    const fd = fs.openSync(QUEUE_PATH, "w");
-    fs.writeSync(fd, "[\n");
-    for (let i = this.head; i < this.queue.length; i++) {
-      const item = this.queue[i];
-      if (item === undefined) continue;
-      const comma = i === this.queue.length - 1 ? "" : ",";
-      fs.writeSync(fd, `  ${JSON.stringify(item)}${comma}\n`);
-    }
-    fs.writeSync(fd, "]\n");
-    fs.closeSync(fd);
-  }
-
-  enqueue(url: string, depth: number = 0, atStart: boolean = false) {
-    if (atStart) {
-      if (this.head > 0) {
-        this.head--;
-        this.queue[this.head] = { url, depth };
-      } else {
-        this.queue.unshift({ url, depth });
+    const count = this.length();
+    if (count === 0 && seedUrls.length > 0) {
+      console.log("Queue empty, loading seed URLs.");
+      for (const url of seedUrls) {
+        this.enqueue(url, 0);
       }
     } else {
-      this.queue.push({ url, depth });
+      console.log(`Queue loaded from SQLite with ${count} items.`);
     }
   }
 
+  save() {}
+
+  enqueue(url: string, depth: number = 0, atStart: boolean = false) {
+    try {
+      const domain = new URL(url).hostname;
+      if (atStart) {
+        const minIdRow = this.db
+          .prepare("SELECT MIN(id) as id FROM queue")
+          .get() as { id: number | null };
+        const minId = minIdRow.id !== null ? minIdRow.id : 0;
+        this.db
+          .prepare(
+            "INSERT OR IGNORE INTO queue (id, url, domain, depth) VALUES (?, ?, ?, ?)",
+          )
+          .run(minId - 1, url, domain, depth);
+      } else {
+        this.db
+          .prepare(
+            "INSERT OR IGNORE INTO queue (url, domain, depth) VALUES (?, ?, ?)",
+          )
+          .run(url, domain, depth);
+      }
+    } catch (e) {}
+  }
+
+  private memoryBuffer: {
+    id: number;
+    url: string;
+    domain: string;
+    depth: number;
+  }[] = [];
+  private recentDomains: string[] = [];
+
   dequeue(): QueueItem | undefined {
-    if (this.head >= this.queue.length) {
-      this.queue = [];
-      this.head = 0;
-      return undefined;
+    if (this.memoryBuffer.length === 0) {
+      const rows = this.db
+        .prepare(
+          "SELECT id, url, domain, depth FROM queue ORDER BY id ASC LIMIT 2000",
+        )
+        .all() as { id: number; url: string; domain: string; depth: number }[];
+      if (rows.length === 0) return undefined;
+
+      const stmt = this.db.prepare("DELETE FROM queue WHERE id = ?");
+      const transaction = this.db.transaction((ids: number[]) => {
+        for (const id of ids) stmt.run(id);
+      });
+      transaction(rows.map((r) => r.id));
+
+      this.memoryBuffer = rows;
     }
-    const item = this.queue[this.head];
 
-    (this.queue as any)[this.head] = undefined;
-    this.head++;
+    let selectedIndex = 0;
 
-    if (this.head > 50000) {
-      this.queue = this.queue.slice(this.head);
-      this.head = 0;
+    for (let i = 0; i < Math.min(this.memoryBuffer.length, 500); i++) {
+      const domain = this.memoryBuffer[i].domain;
+      if (!this.recentDomains.includes(domain)) {
+        selectedIndex = i;
+        this.recentDomains.push(domain);
+        if (this.recentDomains.length > 50) this.recentDomains.shift();
+        break;
+      }
     }
 
-    return item;
+    const item = this.memoryBuffer.splice(selectedIndex, 1)[0];
+    return { url: item.url, depth: item.depth };
   }
 
   resetDepths(newDepth: number) {
-    this.queue.forEach((item) => {
-      if (item) item.depth = newDepth;
-    });
+    this.db.prepare("UPDATE queue SET depth = ?").run(newDepth);
   }
 
-  length() {
-    return this.queue.length - this.head;
+  length(): number {
+    const res = this.db
+      .prepare("SELECT COUNT(*) as count FROM queue")
+      .get() as { count: number };
+    return (res.count || 0) + this.memoryBuffer.length;
   }
 }

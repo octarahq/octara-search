@@ -50,10 +50,36 @@ export async function search(
 ) {
   if (!indexLoaded) return { results: [], total: 0 };
 
-  const allResults = searchIndex.search(query, {
-    ...(miniSearchOptions.searchOptions as any),
-    take: 1000,
-  });
+  let allResults = searchIndex
+    .search(query, {
+      boost: { url: 10, title: 5, description: 2, snippet: 1 },
+      combineWith: "AND",
+      prefix: false,
+      fuzzy: false,
+    })
+    .slice(0, 400);
+
+  if (allResults.length < 10) {
+    allResults = searchIndex
+      .search(query, {
+        boost: { url: 10, title: 5, description: 2, snippet: 1 },
+        combineWith: "AND",
+        prefix: (term: string) => term.length > 3,
+        fuzzy: false,
+      })
+      .slice(0, 400);
+  }
+
+  if (allResults.length === 0) {
+    allResults = searchIndex
+      .search(query, {
+        boost: { url: 10, title: 5, description: 2, snippet: 1 },
+        combineWith: "OR",
+        prefix: true,
+        fuzzy: 0.2,
+      })
+      .slice(0, 100);
+  }
 
   const processedResults = allResults
     .map((r: any) => {

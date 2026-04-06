@@ -33,10 +33,9 @@ async function runMonitor() {
     process.stdin.setRawMode(true);
     readline.emitKeypressEvents(process.stdin);
     process.stdin.on("keypress", (str, key) => {
-      if (isAsking) return; // Wait during URL input
+      if (isAsking) return;
 
       try {
-        // Safe check for key object
         const kn = key ? key.name : str;
         const kc = key ? key.ctrl : false;
 
@@ -76,21 +75,19 @@ async function runMonitor() {
             process.stdout.write("\x1b[2m(Reprise des stats...)\x1b[0m\n");
           });
         }
-      } catch (e) {
-        // Avoid crash on keypress error
-      }
+      } catch (e) {}
     });
   }
 
   client.on("data", (data) => {
-    if (isAsking) return; // Skip crawler output while we ask for input
+    if (isAsking) return;
 
     const raw = data.toString();
     if (!authenticated) {
       if (raw.includes("AUTH_OK")) {
         authenticated = true;
         console.log("Authentification réussie !");
-        // Print remaining content in this chunk if any
+
         const remaining = raw.split("AUTH_OK")[1];
         if (remaining) process.stdout.write(remaining);
       } else if (raw.includes("AUTH_FAILED")) {
