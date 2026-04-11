@@ -8,15 +8,60 @@ import { Link } from "@/components/ui/Link";
 import { Card } from "@/components/ui/Card";
 import { Navbar } from "@/components/Navbar";
 
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
+
 export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const { user, history, addToHistory, searchSuggestions } = useAuth();
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (query.trim()) {
+      if (user) {
+        addToHistory(query.trim());
+      }
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      setIsFocused(false);
     }
+  };
+
+  useEffect(() => {
+    if (!searchSuggestions || query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/search/autocomplete?q=${encodeURIComponent(query)}`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const newSuggestions = (data.results || []).filter(
+            (s: string) => s.toLowerCase() !== query.toLowerCase(),
+          );
+          setSuggestions(newSuggestions);
+        }
+      } catch (err) {
+        console.error("Autocomplete fetch error:", err);
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [query, searchSuggestions]);
+
+  const handleDropdownClick = (q: string) => {
+    setQuery(q);
+    if (user) {
+      addToHistory(q);
+    }
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+    setIsFocused(false);
   };
 
   const handleLuckySearch = async () => {
@@ -80,18 +125,20 @@ export default function Home() {
             className="w-full relative group max-w-3xl"
           >
             <div className="absolute inset-0 bg-emerald-500/10 blur-[100px] rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-1000"></div>
-            <div className="relative bg-zinc-900/40 backdrop-blur-sm rounded-full flex items-center px-4 md:px-6 py-2.5 md:py-4 shadow-2xl ring-1 ring-white/10 hover:ring-emerald-500/40 focus-within:ring-emerald-500/60 transition-all duration-300">
+            <div className="relative bg-zinc-900/40 backdrop-blur-sm rounded-[2rem] flex items-center px-4 md:px-6 shadow-2xl ring-1 ring-white/10 hover:ring-emerald-500/40 focus-within:ring-emerald-500/60 transition-all duration-300">
               <button
                 type="submit"
                 className="material-symbols-outlined text-zinc-500 mr-2 md:mr-4 hover:text-emerald-400 transition-colors cursor-pointer text-xl md:text-2xl"
-                data-icon="search"
               >
                 search
               </button>
               <input
-                className="bg-transparent border-none focus:ring-0 w-full text-base md:text-xl text-zinc-100 placeholder:text-zinc-700 font-body outline-none"
+                className="bg-transparent border-none focus:ring-0 w-full text-base md:text-xl text-zinc-100 placeholder:text-zinc-700 font-body py-4 md:py-6 outline-none"
                 placeholder="Rechercher sur le web..."
                 type="text"
+                autoComplete="off"
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -100,15 +147,62 @@ export default function Home() {
                   type="button"
                   className="p-1 md:p-2 text-zinc-500 hover:text-emerald-400 transition-colors"
                 >
-                  <span
-                    className="material-symbols-outlined text-lg md:text-2xl"
-                    data-icon="mic"
-                  >
+                  <span className="material-symbols-outlined text-lg md:text-2xl">
                     mic
                   </span>
                 </button>
               </div>
             </div>
+
+            {isFocused &&
+              (query.length >= 2
+                ? suggestions.length > 0
+                : history.length > 0) && (
+                <div className="absolute top-full left-4 right-4 mt-4 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden z-20 py-4 text-left">
+                  {query.length >= 2 && suggestions.length > 0 && (
+                    <div className="mb-2 px-6">
+                      <span className="text-[10px] font-black text-emerald-500/50 uppercase tracking-widest">
+                        Suggestions
+                      </span>
+                    </div>
+                  )}
+                  {query.length >= 2 &&
+                    suggestions.map((s, i) => (
+                      <button
+                        key={`suggest-${i}`}
+                        onClick={() => handleDropdownClick(s)}
+                        className="w-full text-left px-6 py-3 hover:bg-emerald-500/10 text-emerald-50 hover:text-emerald-400 transition-all flex items-center gap-4 group/item"
+                      >
+                        <span className="material-symbols-outlined text-emerald-500/40 group-hover/item:text-emerald-400 transition-colors">
+                          search
+                        </span>
+                        <span className="text-lg font-bold">{s}</span>
+                      </button>
+                    ))}
+
+                  {query.length < 2 && history.length > 0 && (
+                    <>
+                      <div className="mb-2 px-6">
+                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
+                          Historique récent
+                        </span>
+                      </div>
+                      {history.map((h, i) => (
+                        <button
+                          key={`hist-${i}`}
+                          onClick={() => handleDropdownClick(h)}
+                          className="w-full text-left px-6 py-3 hover:bg-white/5 text-zinc-400 hover:text-white transition-all flex items-center gap-4 group/item"
+                        >
+                          <span className="material-symbols-outlined text-zinc-600 group-hover/item:text-emerald-400 transition-colors">
+                            history
+                          </span>
+                          <span className="text-lg font-medium">{h}</span>
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
           </form>
 
           <div className="flex flex-wrap justify-center gap-3 md:gap-4">

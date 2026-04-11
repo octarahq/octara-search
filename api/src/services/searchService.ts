@@ -13,7 +13,7 @@ const sql = postgres(config.databaseUrl, {
 
 const miniSearchOptions = {
   fields: ["url", "title", "description", "snippet", "language"],
-  storeFields: ["url", "title", "description", "snippet", "language"],
+  storeFields: ["url", "title", "description", "snippet", "language", "nsfw"],
   idField: "url",
   searchOptions: {
     boost: { url: 10, title: 5, description: 2, snippet: 1 },
@@ -47,8 +47,15 @@ export async function search(
   query: string,
   page: number = 1,
   limit: number = 50,
+  lang: string = "auto",
+  safeSearch: string = "moderate",
 ) {
   if (!indexLoaded) return { results: [], total: 0 };
+
+  const filter =
+    lang && lang !== "auto"
+      ? (result: any) => result.language === lang
+      : undefined;
 
   let allResults = searchIndex
     .search(query, {
@@ -56,6 +63,7 @@ export async function search(
       combineWith: "AND",
       prefix: false,
       fuzzy: false,
+      filter,
     })
     .slice(0, 400);
 
@@ -66,6 +74,7 @@ export async function search(
         combineWith: "AND",
         prefix: (term: string) => term.length > 3,
         fuzzy: false,
+        filter,
       })
       .slice(0, 400);
   }
@@ -77,11 +86,17 @@ export async function search(
         combineWith: "OR",
         prefix: true,
         fuzzy: 0.2,
+        filter,
       })
       .slice(0, 100);
   }
 
-  const processedResults = allResults
+  let filteredResults = allResults;
+  if (safeSearch === "strict") {
+    filteredResults = allResults.filter((r: any) => !r.nsfw);
+  }
+
+  const processedResults = filteredResults
     .map((r: any) => {
       let finalScore = r.score;
       const lowerQuery = query.toLowerCase();
@@ -93,6 +108,11 @@ export async function search(
       if (urlString.length > 100) finalScore *= 0.8;
 
       r.score = finalScore;
+
+      if (safeSearch === "moderate" && r.nsfw) {
+        r.blur = true;
+      }
+
       return r;
     })
     .sort((a: any, b: any) => b.score - a.score);
@@ -123,11 +143,40 @@ export async function search(
   const total = groupedResults.length;
   const offset = (page - 1) * limit;
 
+  let correction: string | undefined;
+  if (total < 500 && query.length >= 3) {
+    let suggestions = searchIndex.autoSuggest(query, { fuzzy: 0 });
+
+    if (suggestions.length === 0 && total < 20) {
+      suggestions = searchIndex.autoSuggest(query, { fuzzy: 0.2 });
+    }
+
+    const bestSuggest = suggestions.find(
+      (s: any) => s.suggestion.toLowerCase() !== query.toLowerCase(),
+    );
+    if (bestSuggest) {
+      correction = bestSuggest.suggestion;
+    }
+  }
+
   return {
     total,
     results: groupedResults.slice(offset, offset + limit),
     totalPages: Math.ceil(total / limit),
+    correction,
   };
+}
+
+export function autocomplete(query: string, limit: number = 8) {
+  if (!indexLoaded || !query || query.length < 2) return [];
+
+  const suggestions = searchIndex.autoSuggest(query, {
+    fuzzy: (term: string) => (term.length > 5 ? 0.2 : 0),
+    prefix: true,
+    combineWith: "AND",
+  });
+
+  return suggestions.slice(0, limit).map((s: any) => s.suggestion);
 }
 
 export async function getStats() {

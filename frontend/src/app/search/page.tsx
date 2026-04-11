@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Favicon } from "@/components/Favicon";
+import { cookies } from "next/headers";
 
 interface SearchResult {
   score: number;
@@ -10,6 +11,7 @@ interface SearchResult {
   description: string;
   snippet: string;
   language: string;
+  blur?: boolean;
   sitelinks?: {
     url: string;
     title: string;
@@ -24,6 +26,7 @@ interface ApiResponse {
   total: number;
   totalPages: number;
   page: number;
+  correction?: string;
 }
 
 export async function generateMetadata({
@@ -41,6 +44,8 @@ export async function generateMetadata({
   };
 }
 
+import { SearchResultsList } from "@/components/SearchResultsList";
+
 export default async function SearchPage({
   searchParams,
 }: {
@@ -50,6 +55,47 @@ export default async function SearchPage({
   const query = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
   const page =
     typeof resolvedParams.page === "string" ? Number(resolvedParams.page) : 1;
+  const limitParam =
+    typeof resolvedParams.limit === "string"
+      ? Number(resolvedParams.limit)
+      : null;
+
+  let userSettings = {
+    language: "auto",
+    resultsPerPage: 10,
+    openInNewTab: true,
+    safeSearch: "moderate",
+  };
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("octara_token")?.value;
+    if (token) {
+      const baseUrl = process.env.ACCOUNT_API_BASE_URL || "https://octara.xyz";
+      const settingsRes = await fetch(`${baseUrl}/api/v1/search/settings`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      if (settingsRes.ok) {
+        const data = await settingsRes.json();
+        if (data.settings) {
+          userSettings = {
+            language: data.settings.language || userSettings.language,
+            resultsPerPage:
+              data.settings.resultsPerPage || userSettings.resultsPerPage,
+            openInNewTab:
+              data.settings.openInNewTab !== undefined
+                ? data.settings.openInNewTab
+                : true,
+            safeSearch: data.settings.safeSearch || userSettings.safeSearch,
+          };
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Failed to fetch user settings in SSR:", err);
+  }
+
+  const limit = limitParam || userSettings.resultsPerPage || 10;
 
   let data: ApiResponse = {
     results: [],
@@ -62,10 +108,14 @@ export default async function SearchPage({
   if (query) {
     try {
       const baseUrl = process.env.API_URL || "http://localhost:3001";
-      const res = await fetch(
-        `${baseUrl}/api/search?q=${encodeURIComponent(query)}&page=${page}`,
-        { cache: "no-store" },
-      );
+      const searchUrl = new URL(`${baseUrl}/api/search`);
+      searchUrl.searchParams.append("q", query);
+      searchUrl.searchParams.append("page", page.toString());
+      searchUrl.searchParams.append("limit", limit.toString());
+      searchUrl.searchParams.append("lang", userSettings.language || "auto");
+      searchUrl.searchParams.append("safesearch", userSettings.safeSearch);
+
+      const res = await fetch(searchUrl.toString(), { cache: "no-store" });
       if (res.ok) {
         data = await res.json();
       }
@@ -97,8 +147,11 @@ export default async function SearchPage({
         <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div>
             <p className="text-zinc-500 text-xs md:text-sm">
-              Environ {data.total} résultats ({data.timeMs.toFixed(3)}{" "}
-              millisecondes)
+              Environ{" "}
+              <span className="text-emerald-400 font-extrabold">
+                {data.total}
+              </span>{" "}
+              résultats en {data.timeMs.toFixed(3)} ms
             </p>
             {query && (
               <h1 className="text-zinc-100 text-lg md:text-xl font-bold mt-1">
@@ -106,65 +159,26 @@ export default async function SearchPage({
                 <span className="text-emerald-500">"{query}"</span>
               </h1>
             )}
+            {data.correction && (
+              <p className="text-zinc-400 text-sm mt-2">
+                Essayer avec l'orthographe :{" "}
+                <Link
+                  href={`/search?q=${encodeURIComponent(data.correction)}`}
+                  className="text-emerald-400 font-bold hover:underline"
+                >
+                  {data.correction}
+                </Link>
+              </p>
+            )}
           </div>
         </div>
 
         <div className="flex flex-col gap-6 md:gap-8">
           {data.results.length > 0 ? (
-            data.results.map((result, i) => (
-              <div
-                key={i}
-                className="group search-item transition-all duration-300"
-              >
-                <Link href={result.url}>
-                  <div className="flex flex-col mb-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Favicon url={result.url} />
-                      <span className="text-zinc-400 text-[10px] md:text-xs truncate max-w-[200px] sm:max-w-sm">
-                        {result.url}
-                      </span>
-                    </div>
-                    <h3 className="text-emerald-500 text-lg md:text-xl font-bold search-title hover:underline decoration-emerald-500/30 transition-all">
-                      {result.title}
-                    </h3>
-                  </div>
-                  <p className="text-zinc-400 text-xs md:text-sm leading-relaxed line-clamp-2">
-                    {result.description || result.snippet}
-                  </p>
-                </Link>
-
-                {result.sitelinks && result.sitelinks.length > 0 && (
-                  <div className="mt-4 ml-2 md:ml-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-12 gap-y-3 md:gap-y-4 border-l border-zinc-800/50 pl-4 md:pl-6 py-1">
-                    {result.sitelinks.map((link, idx) => {
-                      const mainTitle = result.title.split("|")[0].trim();
-                      let displayTitle = link.title;
-                      if (displayTitle.includes("|")) {
-                        const parts = displayTitle.split("|");
-                        if (
-                          parts[0].trim().toLowerCase() ===
-                          mainTitle.toLowerCase()
-                        ) {
-                          displayTitle = parts.slice(1).join("|").trim();
-                        }
-                      }
-
-                      return (
-                        <div key={idx} className="flex flex-col group/sitelink">
-                          <Link href={link.url}>
-                            <h4 className="text-emerald-500/90 text-xs md:text-[13px] font-bold hover:underline group-hover/sitelink:text-emerald-400 transition-colors truncate">
-                              {displayTitle}
-                            </h4>
-                            <p className="text-zinc-500 text-[10px] md:text-[11px] line-clamp-1 mt-0.5">
-                              {link.snippet || link.description}
-                            </p>
-                          </Link>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ))
+            <SearchResultsList
+              initialResults={data.results}
+              openInNewTab={userSettings.openInNewTab}
+            />
           ) : query ? (
             <div className="py-20 text-center">
               <span className="material-symbols-outlined text-zinc-800 text-6xl mb-4">
@@ -230,9 +244,6 @@ export default async function SearchPage({
                   </span>
                 </Link>
               )}
-            </div>
-            <div className="text-zinc-600 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em]">
-              Octara © 2026 • Intelligent Search Engine
             </div>
           </footer>
         )}

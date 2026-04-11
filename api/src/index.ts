@@ -13,7 +13,14 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const app = express();
 const PORT = process.env.API_PORT || 3001;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  }),
+);
 app.use(express.json());
 
 app.use("/api/search", searchRouter);

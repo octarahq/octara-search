@@ -16,7 +16,7 @@ export async function countPages() {
 }
 
 export async function fetchPages(limit: number, offset: number) {
-  return sql`SELECT * FROM pages ORDER BY url LIMIT ${limit} OFFSET ${offset}`;
+  return sql`SELECT url, title, description, snippet, language, nsfw FROM pages ORDER BY url LIMIT ${limit} OFFSET ${offset}`;
 }
 
 export async function saveIndex(indexData: string) {

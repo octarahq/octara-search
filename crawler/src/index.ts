@@ -372,6 +372,7 @@ async function start() {
               snippet: parsed.snippet,
               language: parsed.language,
               content_hash: parsed.contentHash,
+              nsfw: parsed.nsfw,
             });
             bloom.add(normUrl);
             pagesCrawled++;

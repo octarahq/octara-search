@@ -7,6 +7,7 @@ interface PageEntry {
   snippet: string;
   language: string;
   content_hash: string;
+  nsfw: boolean;
 }
 
 export class DbBuffer {
@@ -26,13 +27,14 @@ export class DbBuffer {
 
     try {
       await sql`
-        INSERT INTO pages ${sql(this.buffer, "url", "title", "description", "snippet", "language", "content_hash")}
+        INSERT INTO pages ${sql(this.buffer, "url", "title", "description", "snippet", "language", "content_hash", "nsfw")}
         ON CONFLICT (url) DO UPDATE SET
           title = EXCLUDED.title,
           description = EXCLUDED.description,
           snippet = EXCLUDED.snippet,
           language = EXCLUDED.language,
           content_hash = EXCLUDED.content_hash,
+          nsfw = EXCLUDED.nsfw,
           crawled_at = NOW()
       `;
       this.totalInserted += this.buffer.length;

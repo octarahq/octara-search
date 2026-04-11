@@ -106,6 +106,7 @@ async function runMaintenance() {
           snippet: parsed.snippet,
           language: parsed.language,
           content_hash: parsed.contentHash,
+          nsfw: parsed.nsfw,
         });
 
         updatedCount++;

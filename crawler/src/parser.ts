@@ -9,6 +9,7 @@ export interface ParseResult {
   contentHash: string;
   links: string[];
   sitemaps: string[];
+  nsfw: boolean;
 }
 
 export function normalizeUrl(url: string, baseUrl?: string): string {
@@ -107,6 +108,27 @@ export function parseHtml(html: string, baseUrl: string): ParseResult {
     }
   });
 
+  const nsfwKeywords = [
+    "porn",
+    "sex",
+    "nude",
+    "adult",
+    "hentai",
+    "xxx",
+    "naked",
+    "brazzers",
+    "pornhub",
+    "xvideos",
+  ];
+  const fullText = (
+    cleanTitle +
+    " " +
+    cleanDesc +
+    " " +
+    cleanSnippet
+  ).toLowerCase();
+  const isNsfw = nsfwKeywords.some((kw) => fullText.includes(kw));
+
   return {
     title: cleanTitle,
     description: cleanDesc,
@@ -115,6 +137,7 @@ export function parseHtml(html: string, baseUrl: string): ParseResult {
     contentHash: hash,
     links: [...new Set(links)],
     sitemaps: [...new Set(sitemaps)],
+    nsfw: isNsfw,
   };
 }
 
