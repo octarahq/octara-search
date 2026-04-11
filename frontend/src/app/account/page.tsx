@@ -6,8 +6,11 @@ import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Sidebar } from "./_components/Sidebar";
+import { useTranslations } from "next-intl";
 
 export default function AccountPage() {
+  const t = useTranslations("account");
+  const tAuth = useTranslations("common.auth");
   const { user, logout, isLoading, historyEnabled, updateSettings } = useAuth();
 
   if (isLoading) {
@@ -21,15 +24,15 @@ export default function AccountPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-4xl font-black text-white mb-6">Accès Restreint</h1>
-        <p className="text-zinc-400 mb-8 max-w-md">
-          Veuillez vous connecter pour accéder à vos paramètres de compte.
-        </p>
+        <h1 className="text-4xl font-black text-white mb-6">
+          {tAuth("restricted_access")}
+        </h1>
+        <p className="text-zinc-400 mb-8 max-w-md">{tAuth("login_required")}</p>
         <Link
           href="/"
           className="px-8 py-3 bg-emerald-500 text-emerald-950 font-bold rounded-xl hover:bg-emerald-400 transition-all"
         >
-          Retour à l'accueil
+          {tAuth("back_home")}
         </Link>
       </div>
     );
@@ -45,11 +48,9 @@ export default function AccountPage() {
         <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 max-w-5xl">
           <header className="mb-12">
             <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 mb-2">
-              Paramètres du compte
+              {t("title")}
             </h1>
-            <p className="text-slate-400 max-w-2xl">
-              Gérez votre compte Octara Search.
-            </p>
+            <p className="text-slate-400 max-w-2xl">{t("description")}</p>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -68,7 +69,7 @@ export default function AccountPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold uppercase tracking-widest text-slate-500 px-1">
-                        Nom d'affichage
+                        {t("profile.display_name")}
                       </label>
                       <div className="w-full bg-slate-950/50 rounded-xl text-emerald-100 py-3 px-4 border border-white/5">
                         {user.name || "N/A"}
@@ -84,7 +85,7 @@ export default function AccountPage() {
                       <span className="material-symbols-outlined text-lg">
                         edit
                       </span>
-                      Modifier le profil
+                      {t("profile.edit")}
                     </Link>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-slate-950/30 rounded-2xl border border-white/5">
@@ -94,10 +95,10 @@ export default function AccountPage() {
                       </span>
                       <div>
                         <div className="text-sm font-bold text-emerald-100">
-                          Historique de recherche
+                          {t("history.title")}
                         </div>
                         <div className="text-xs text-slate-500">
-                          Enregistrer vos requêtes pour des suggestions rapides
+                          {t("history.description")}
                         </div>
                       </div>
                     </div>

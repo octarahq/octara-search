@@ -1,0 +1,41 @@
+{
+    "title": "Mes Domaines",
+    "description": "Gérez et vérifiez vos domaines pour l'écosystème Octara.",
+    "add": {
+        "title": "Ajouter un domaine",
+        "placeholder": "exemple.com",
+        "button": "Ajouter",
+        "adding": "Ajout...",
+        "hint": "Entrez le nom de domaine nu (sans http:// ou https://)"
+    },
+    "list": {
+        "title": "Domaines enregistrés",
+        "empty": "Aucun domaine enregistré pour le moment.",
+        "status": {
+            "verified": "Vérifié",
+            "pending": "En attente",
+            "failed": "Échoué"
+        },
+        "verify": "Vérifier",
+        "verifying": "Vérification..."
+    },
+    "how_to": {
+        "title": "Comment vérifier mon domaine ?",
+        "description": "Une fois ajouté, cliquez sur \"Vérifier\". Vous devrez ajouter un enregistrement TXT DNS spécifique pour confirmer que vous êtes bien le propriétaire du domaine."
+    },
+    "modal": {
+        "title": "Vérifier {domain}",
+        "description": "Configurez vos enregistrements DNS pour valider la propriété",
+        "provider_label": "Sélectionnez votre fournisseur DNS",
+        "txt_label": "Enregistrement TXT requis",
+        "table": {
+            "type": "Type",
+            "name": "Nom",
+            "value": "Valeur",
+            "ttl": "TTL"
+        },
+        "warning": "La propagation DNS peut prendre de 2 à 24 heures.",
+        "close": "Fermer",
+        "confirmed": "J'ai ajouté le record"
+    }
+}

@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 import dotenv from "dotenv";
+import createNextIntlPlugin from "next-intl/plugin";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+const withNextIntl = createNextIntlPlugin();
 
 const API_PORT = process.env.API_PORT || 3001;
 
@@ -48,4 +51,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

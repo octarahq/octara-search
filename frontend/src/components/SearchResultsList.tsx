@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Favicon } from "@/components/Favicon";
+import { useTranslations } from "next-intl";
 
 interface SearchResult {
   score: number;
@@ -29,6 +30,7 @@ export const SearchResultsList = ({
   initialResults,
   openInNewTab,
 }: SearchResultsListProps) => {
+  const t = useTranslations("search");
   const [unblurredUrls, setUnblurredUrls] = useState<Set<string>>(new Set());
 
   const toggleBlur = (url: string) => {
@@ -63,13 +65,13 @@ export const SearchResultsList = ({
                       analytics
                     </span>
                     <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">
-                      Analyse du Score
+                      {t("score_analysis")}
                     </span>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
                       <span className="text-zinc-500 text-[11px]">
-                        Score de pertinence
+                        {t("relevance_score")}
                       </span>
                       <span className="text-emerald-400 font-mono text-xs font-bold">
                         {result.score.toFixed(2)}
@@ -77,7 +79,7 @@ export const SearchResultsList = ({
                     </div>
                     <div className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
                       <span className="text-zinc-500 text-[11px]">
-                        Langue détectée
+                        {t("detected_lang")}
                       </span>
                       <span className="text-zinc-300 font-mono text-xs font-bold uppercase">
                         {result.language}
@@ -95,13 +97,13 @@ export const SearchResultsList = ({
                     visibility_off
                   </span>
                   <p className="text-zinc-300 text-sm font-bold mb-3">
-                    Contenu potentiellement sensible
+                    {t("sensitive_content")}
                   </p>
                   <button
                     onClick={() => toggleBlur(result.url)}
                     className="px-4 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold transition-all active:scale-95"
                   >
-                    Afficher le contenu
+                    {t("show_content")}
                   </button>
                 </div>
               )}

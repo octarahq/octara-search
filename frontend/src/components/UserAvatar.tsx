@@ -9,17 +9,21 @@ interface UserAvatarProps {
   iconSize?: string;
 }
 
+import { useTranslations } from "next-intl";
+
 export const UserAvatar = ({
   avatarURL,
   name,
   className = "w-full h-full",
   iconSize = "text-xl md:text-2xl",
 }: UserAvatarProps) => {
+  const t = useTranslations("common.navbar");
+
   if (avatarURL) {
     return (
       <img
         src={avatarURL}
-        alt={name || "User"}
+        alt={name || t("user")}
         className={`${className} object-cover`}
       />
     );

@@ -1,0 +1,16 @@
+{
+    "results_stats": "Environ {total} résultats en {time} ms",
+    "results_for": "Résultats pour",
+    "did_you_mean": "Vouliez-vous dire :",
+    "no_results": "Aucun résultat trouvé pour cette recherche.",
+    "sensitive_content": "Contenu potentiellement sensible",
+    "show_content": "Afficher le contenu",
+    "score_analysis": "Analyse du Score",
+    "relevance_score": "Score de pertinence",
+    "detected_lang": "Langue détectée",
+    "metadata": {
+        "title_default": "Recherche",
+        "description_query": "Résultats de recherche Octara pour : {query}. Explorez le web intelligemment.",
+        "description_default": "Recherchez sur le web avec Octara, le moteur de recherche ultra-rapide."
+    }
+}

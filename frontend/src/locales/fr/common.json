@@ -1,0 +1,36 @@
+{
+    "navbar": {
+        "placeholder": "Rechercher sur le web...",
+        "news": "Actualités",
+        "search": "Recherche",
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "history": "Historique récent",
+        "suggestions": "Suggestions",
+        "user": "Utilisateur"
+    },
+    "footer": {
+        "privacy": "Confidentialité",
+        "terms": "Conditions",
+        "status": "Statut",
+        "about": "À propos",
+        "company": "Entreprise"
+    },
+    "sidebar": {
+        "settings": "Paramètres",
+        "manage": "Gérez vos préférences",
+        "profile": "Profil",
+        "search": "Recherche",
+        "domains": "Domaines"
+    },
+    "auth": {
+        "restricted_access": "Accès Restreint",
+        "login_required": "Veuillez vous connecter pour accéder à vos paramètres de compte.",
+        "back_home": "Retour à l'accueil"
+    },
+    "account": {
+        "copied_to_clipboard": "Copié dans le presse-papier !",
+        "delete_domain_confirm": "Voulez-vous vraiment supprimer ce domaine ?",
+        "connection_error_verify": "Erreur de connexion lors de la vérification."
+    }
+}

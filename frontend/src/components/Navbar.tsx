@@ -7,11 +7,14 @@ import { useAuth } from "@/context/AuthContext";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useEffect } from "react";
 
+import { useTranslations } from "next-intl";
+
 interface NavbarProps {
   initialQuery?: string;
 }
 
 export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
+  const t = useTranslations("common.navbar");
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState(initialQuery);
@@ -64,8 +67,8 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
   }, [query, searchSuggestions, isNewsPage]);
 
   const navLinks = [
-    { href: "/news", label: "Actualités", active: isNewsPage },
-    { href: "/", label: "Recherche", active: pathname === "/" },
+    { href: "/news", label: t("news"), active: isNewsPage },
+    { href: "/", label: t("search"), active: pathname === "/" },
   ];
 
   const handleDropdownClick = (q: string) => {
@@ -106,7 +109,9 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
                 </div>
                 <input
                   className="w-full bg-zinc-900/50 border-none text-zinc-100 pl-9 md:pl-12 pr-4 md:pr-12 py-1.5 md:py-2.5 rounded-full ring-1 ring-white/10 focus:ring-emerald-500/50 focus:bg-zinc-900 transition-all font-body text-[13px] md:text-sm outline-none truncate"
-                  placeholder={isNewsPage ? "Actualités..." : "Rechercher..."}
+                  placeholder={
+                    isNewsPage ? `${t("news")}...` : t("placeholder")
+                  }
                   type="text"
                   value={query}
                   autoComplete="off"
@@ -127,7 +132,7 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
                     {query.length >= 2 && suggestions.length > 0 && (
                       <div className="mb-1 pointer-events-none px-4 py-1">
                         <span className="text-[10px] font-black text-emerald-500/50 uppercase tracking-widest">
-                          Suggestions
+                          {t("suggestions")}
                         </span>
                       </div>
                     )}
@@ -149,7 +154,7 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
                       <>
                         <div className="mb-1 pointer-events-none px-4 py-1">
                           <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
-                            Historique récent
+                            {t("history")}
                           </span>
                         </div>
                         {history.map((h, i) => (
@@ -194,7 +199,7 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
               <button
                 onClick={logout}
                 className="p-1.5 text-zinc-500 hover:text-red-400 transition-colors hidden sm:flex"
-                title="Déconnexion"
+                title={t("logout")}
               >
                 <span className="material-symbols-outlined text-xl">
                   logout
@@ -207,7 +212,7 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
               className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all text-xs font-bold"
             >
               <span className="material-symbols-outlined text-lg">login</span>
-              <span className="hidden sm:inline">Connexion</span>
+              <span className="hidden sm:inline">{t("login")}</span>
             </button>
           )}
         </div>
@@ -240,7 +245,7 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-white font-bold truncate">
-                {user.name || "Utilisateur"}
+                {user.name || t("user")}
               </div>
               <div className="text-zinc-500 text-xs truncate">{user.email}</div>
             </div>

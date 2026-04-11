@@ -47,13 +47,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="fr" className="dark">
+    <html lang={locale} className="dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -71,7 +77,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-background text-on-surface flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <NextIntlClientProvider messages={messages}>
+          <AuthProvider>{children}</AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

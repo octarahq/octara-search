@@ -1,0 +1,20 @@
+{
+    "title": "Octara Search",
+    "placeholder": "Rechercher sur le web...",
+    "search_button": "Rechercher",
+    "lucky_button": "J'ai de la chance",
+    "features": {
+        "speed": {
+            "title": "Recherche Rapide",
+            "description": "Accédez instantanément aux informations dont vous avez besoin grâce à notre moteur optimisée pour la vitesse."
+        },
+        "privacy": {
+            "title": "Vie Privée d'Abord",
+            "description": "Recherchez en toute confidence. Vos données sont cryptées et ne sont jamais vendues à des tiers."
+        },
+        "zdistraction": {
+            "title": "Zéro Distraction",
+            "description": "Une interface épurée et sans publicité invasive, conçue pour se concentrer uniquement sur vos recherches."
+        }
+    }
+}

@@ -5,6 +5,7 @@ import { Link } from "@/components/ui/Link";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "../_components/Sidebar";
+import { useTranslations } from "next-intl";
 
 interface Domain {
   id: string;
@@ -15,6 +16,9 @@ interface Domain {
 }
 
 export default function DomainsPage() {
+  const t = useTranslations("account_domains");
+  const tAuth = useTranslations("common.auth");
+  const tAcc = useTranslations("common.account");
   const { user, token, isLoading } = useAuth();
   const [domains, setDomains] = useState<Domain[]>([]);
   const [newDomain, setNewDomain] = useState("");
@@ -101,7 +105,7 @@ export default function DomainsPage() {
 
   const deleteDomain = async (id: string) => {
     if (!token) return;
-    if (!confirm("Voulez-vous vraiment supprimer ce domaine ?")) return;
+    if (!confirm(tAcc("delete_domain_confirm"))) return;
     try {
       const res = await fetch(`/api/v1/me/domains?id=${id}`, {
         method: "DELETE",
@@ -139,7 +143,7 @@ export default function DomainsPage() {
       }
     } catch (error) {
       console.error("Failed to verify domain:", error);
-      alert("Erreur de connexion lors de la vérification.");
+      alert(tAcc("connection_error_verify"));
     } finally {
       setVerifyingIds((prev) => {
         const next = new Set(prev);
@@ -151,7 +155,7 @@ export default function DomainsPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert("Copié dans le presse-papier !");
+    alert(tAcc("copied_to_clipboard"));
   };
 
   useEffect(() => {
@@ -171,15 +175,15 @@ export default function DomainsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-4xl font-black text-white mb-6">Accès Restreint</h1>
-        <p className="text-zinc-400 mb-8 max-w-md">
-          Veuillez vous connecter pour accéder à vos domaines.
-        </p>
+        <h1 className="text-4xl font-black text-white mb-6">
+          {tAuth("restricted_access")}
+        </h1>
+        <p className="text-zinc-400 mb-8 max-w-md">{tAuth("login_required")}</p>
         <Link
           href="/"
           className="px-8 py-3 bg-emerald-500 text-emerald-950 font-bold rounded-xl hover:bg-emerald-400 transition-all"
         >
-          Retour à l'accueil
+          {tAuth("back_home")}
         </Link>
       </div>
     );
@@ -197,11 +201,9 @@ export default function DomainsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 mb-2">
-                  Mes Domaines
+                  {t("title")}
                 </h1>
-                <p className="text-slate-400 max-w-2xl">
-                  Gérez et vérifiez vos domaines pour l'écosystème Octara.
-                </p>
+                <p className="text-slate-400 max-w-2xl">{t("description")}</p>
               </div>
               <button
                 onClick={fetchDomains}
@@ -222,7 +224,7 @@ export default function DomainsPage() {
                 <span className="material-symbols-outlined text-emerald-500">
                   add_circle
                 </span>
-                Ajouter un domaine
+                {t("add.title")}
               </h2>
               <form onSubmit={addDomain} className="flex gap-4">
                 <div className="flex-1 relative">
@@ -238,11 +240,11 @@ export default function DomainsPage() {
                   disabled={isAdding || !newDomain.trim()}
                   className="px-8 bg-emerald-500 text-emerald-950 font-black rounded-2xl hover:bg-emerald-400 transition-all disabled:opacity-50 disabled:grayscale"
                 >
-                  {isAdding ? "Ajout..." : "Ajouter"}
+                  {isAdding ? t("add.adding") : t("add.button")}
                 </button>
               </form>
               <p className="mt-4 text-xs text-slate-500 px-2 italic">
-                Entrez le nom de domaine nu (sans http:// ou https://)
+                {t("add.hint")}
               </p>
             </section>
 
@@ -251,7 +253,7 @@ export default function DomainsPage() {
                 <span className="material-symbols-outlined text-emerald-500">
                   list_alt
                 </span>
-                Domaines enregistrés
+                {t("list.title")}
               </h2>
 
               <div className="grid grid-cols-1 gap-4">
@@ -261,7 +263,7 @@ export default function DomainsPage() {
                       domain_disabled
                     </span>
                     <p className="text-slate-500 font-medium">
-                      Aucun domaine enregistré pour le moment.
+                      {t("list.empty")}
                     </p>
                   </div>
                 ) : (
@@ -291,10 +293,10 @@ export default function DomainsPage() {
                               className={`text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md ${domain.status === "VERIFIED" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}
                             >
                               {domain.status === "VERIFIED"
-                                ? "Vérifié"
+                                ? t("list.status.verified")
                                 : domain.status === "PENDING"
-                                  ? "En attente"
-                                  : "Échoué"}
+                                  ? t("list.status.pending")
+                                  : t("list.status.failed")}
                             </span>
                           </div>
                         </div>
@@ -313,10 +315,10 @@ export default function DomainsPage() {
                                   <span className="material-symbols-outlined animate-spin text-sm">
                                     refresh
                                   </span>
-                                  Vérification...
+                                  {t("list.verifying")}
                                 </>
                               ) : (
-                                "Vérifier"
+                                t("list.verify")
                               )}
                             </button>
                             <button
@@ -355,13 +357,9 @@ export default function DomainsPage() {
                 </span>
                 <div className="text-sm text-slate-400 leading-relaxed">
                   <strong className="text-emerald-300 block mb-1">
-                    Comment vérifier mon domaine ?
+                    {t("how_to.title")}
                   </strong>
-                  Une fois ajouté, cliquez sur "Vérifier". Vous devrez ajouter
-                  un enregistrement TXT DNS spécifique pour confirmer que vous
-                  êtes bien le propriétaire du domaine. Ce système permet
-                  d'activer des fonctionnalités avancées pour vos sites dans
-                  Octara Search.
+                  {t("how_to.description")}
                 </div>
               </div>
             </div>
@@ -381,10 +379,10 @@ export default function DomainsPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-emerald-50">
-                    Vérifier {selectedDomain.domain}
+                    {t("modal.title", { domain: selectedDomain.domain })}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Configurez vos enregistrements DNS pour valider la propriété
+                    {t("modal.description")}
                   </p>
                 </div>
               </div>
@@ -399,7 +397,7 @@ export default function DomainsPage() {
             <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
               <div>
                 <label className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4 block px-1">
-                  Sélectionnez votre fournisseur DNS
+                  {t("modal.provider_label")}
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {dnsProviders.map((provider) => {
@@ -440,16 +438,16 @@ export default function DomainsPage() {
 
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-2 block px-1">
-                  Enregistrement TXT requis
+                  {t("modal.txt_label")}
                 </label>
                 <div className="bg-slate-950/60 border border-white/5 rounded-3xl overflow-hidden">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-white/5 text-slate-400 text-[10px] uppercase tracking-wider font-black">
                       <tr>
-                        <th className="px-6 py-3">Type</th>
-                        <th className="px-6 py-3">Nom</th>
-                        <th className="px-6 py-3">Valeur / Contenu</th>
-                        <th className="px-6 py-3">TTL</th>
+                        <th className="px-6 py-3">{t("modal.table.type")}</th>
+                        <th className="px-6 py-3">{t("modal.table.name")}</th>
+                        <th className="px-6 py-3">{t("modal.table.value")}</th>
+                        <th className="px-6 py-3">{t("modal.table.ttl")}</th>
                       </tr>
                     </thead>
                     <tbody className="text-emerald-100 font-medium">
@@ -489,8 +487,7 @@ export default function DomainsPage() {
                   warning
                 </span>
                 <p className="text-xs text-amber-200/70 leading-relaxed">
-                  La propagation DNS peut prendre de 2 à 24 heures. Si la
-                  vérification échoue immédiatement, réessayez plus tard.
+                  {t("modal.warning")}
                 </p>
               </div>
             </div>
@@ -500,7 +497,7 @@ export default function DomainsPage() {
                 onClick={() => setShowModal(false)}
                 className="flex-1 py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-700 transition-all"
               >
-                Fermer
+                {t("modal.close")}
               </button>
               <button
                 onClick={() => {
@@ -509,7 +506,7 @@ export default function DomainsPage() {
                 }}
                 className="flex-1 py-4 bg-emerald-500 text-emerald-950 font-black rounded-2xl hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
               >
-                J'ai ajouté le record
+                {t("modal.confirmed")}
               </button>
             </footer>
           </div>

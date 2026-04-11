@@ -1,0 +1,20 @@
+{
+    "title": "Octara Search",
+    "placeholder": "Search the web...",
+    "search_button": "Search",
+    "lucky_button": "I'm Feeling Lucky",
+    "features": {
+        "speed": {
+            "title": "Fast Search",
+            "description": "Instantly access the information you need with our speed-optimized engine."
+        },
+        "privacy": {
+            "title": "Privacy First",
+            "description": "Search with confidence. Your data is encrypted and never sold to third parties."
+        },
+        "zdistraction": {
+            "title": "Zero Distraction",
+            "description": "A clean interface without invasive ads, designed to focus solely on your searches."
+        }
+    }
+}

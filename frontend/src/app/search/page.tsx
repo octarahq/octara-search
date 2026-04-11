@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Favicon } from "@/components/Favicon";
 import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 
 interface SearchResult {
   score: number;
@@ -34,13 +35,14 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const t = await getTranslations("search");
   const resolvedParams = await searchParams;
   const query = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
   return {
-    title: query ? `${query}` : "Recherche",
+    title: query ? `${query}` : t("metadata.title_default"),
     description: query
-      ? `Résultats de recherche Octara pour : ${query}. Explorez le web intelligemment.`
-      : "Recherchez sur le web avec Octara, le moteur de recherche ultra-rapide.",
+      ? t("metadata.description_query", { query })
+      : t("metadata.description_default"),
   };
 }
 
@@ -51,6 +53,7 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const t = await getTranslations("search");
   const resolvedParams = await searchParams;
   const query = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
   const page =
@@ -147,21 +150,20 @@ export default async function SearchPage({
         <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-2">
           <div>
             <p className="text-zinc-500 text-xs md:text-sm">
-              Environ{" "}
-              <span className="text-emerald-400 font-extrabold">
-                {data.total}
-              </span>{" "}
-              résultats en {data.timeMs.toFixed(3)} ms
+              {t("results_stats", {
+                total: data.total,
+                time: data.timeMs.toFixed(3),
+              })}
             </p>
             {query && (
               <h1 className="text-zinc-100 text-lg md:text-xl font-bold mt-1">
-                Résultats pour{" "}
+                {t("results_for")}{" "}
                 <span className="text-emerald-500">"{query}"</span>
               </h1>
             )}
             {data.correction && (
               <p className="text-zinc-400 text-sm mt-2">
-                Essayer avec l'orthographe :{" "}
+                {t("did_you_mean")}{" "}
                 <Link
                   href={`/search?q=${encodeURIComponent(data.correction)}`}
                   className="text-emerald-400 font-bold hover:underline"
@@ -184,9 +186,7 @@ export default async function SearchPage({
               <span className="material-symbols-outlined text-zinc-800 text-6xl mb-4">
                 search_off
               </span>
-              <p className="text-zinc-500">
-                Aucun résultat trouvé pour cette recherche.
-              </p>
+              <p className="text-zinc-500">{t("no_results")}</p>
             </div>
           ) : null}
         </div>

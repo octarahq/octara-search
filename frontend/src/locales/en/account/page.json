@@ -1,0 +1,12 @@
+{
+    "title": "Account Settings",
+    "description": "Manage your Octara Search account.",
+    "profile": {
+        "display_name": "Display Name",
+        "edit": "Edit Profile"
+    },
+    "history": {
+        "title": "Search History",
+        "description": "Save your queries for fast suggestions"
+    }
+}

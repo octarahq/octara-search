@@ -1,0 +1,36 @@
+{
+    "navbar": {
+        "placeholder": "Search the web...",
+        "news": "News",
+        "search": "Search",
+        "login": "Login",
+        "logout": "Logout",
+        "history": "Recent history",
+        "suggestions": "Suggestions",
+        "user": "User"
+    },
+    "footer": {
+        "privacy": "Privacy",
+        "terms": "Terms",
+        "status": "Status",
+        "about": "About",
+        "company": "Company"
+    },
+    "sidebar": {
+        "settings": "Settings",
+        "manage": "Manage your preferences",
+        "profile": "Profile",
+        "search": "Search",
+        "domains": "Domains"
+    },
+    "auth": {
+        "restricted_access": "Restricted Access",
+        "login_required": "Please log in to access your account settings.",
+        "back_home": "Back to Home"
+    },
+    "account": {
+        "copied_to_clipboard": "Copied to clipboard!",
+        "delete_domain_confirm": "Are you sure you want to delete this domain?",
+        "connection_error_verify": "Connection error during verification."
+    }
+}

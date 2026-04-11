@@ -1,0 +1,36 @@
+{
+    "title": "Paramètres de Recherche",
+    "description": "Configurez la manière dont Octara Search récupère et affiche vos résultats.",
+    "safesearch": {
+        "title": "Niveaux SafeSearch",
+        "off": {
+            "name": "Désactivé",
+            "description": "Aucun filtrage. Affiche tous les résultats tels quels."
+        },
+        "moderate": {
+            "name": "Modéré",
+            "description": "Floute le contenu sensible. Vous pouvez choisir de dévoiler certains résultats."
+        },
+        "strict": {
+            "name": "Strict",
+            "description": "Sécurité maximale. Masque les résultats signalés comme NSFW."
+        }
+    },
+    "toggles": {
+        "new_tab": {
+            "title": "Ouvrir les liens dans un nouvel onglet",
+            "description": "Gardez votre session de recherche active pendant la navigation."
+        },
+        "suggestions": {
+            "title": "Suggestions de recherche",
+            "description": "Affiche des requêtes prédictives pendant la saisie."
+        }
+    },
+    "language": "Langue de recherche",
+    "language_options": {
+        "auto": "Détection automatique (Auto)",
+        "fr": "Français",
+        "en": "Anglais"
+    },
+    "results_per_page": "Résultats par page"
+}

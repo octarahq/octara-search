@@ -1,0 +1,41 @@
+{
+    "title": "My Domains",
+    "description": "Manage and verify your domains for the Octara ecosystem.",
+    "add": {
+        "title": "Add a domain",
+        "placeholder": "example.com",
+        "button": "Add",
+        "adding": "Adding...",
+        "hint": "Enter the bare domain name (without http:// or https://)"
+    },
+    "list": {
+        "title": "Registered Domains",
+        "empty": "No domains registered yet.",
+        "status": {
+            "verified": "Verified",
+            "pending": "Pending",
+            "failed": "Failed"
+        },
+        "verify": "Verify",
+        "verifying": "Verifying..."
+    },
+    "how_to": {
+        "title": "How to verify my domain?",
+        "description": "Once added, click \"Verify\". You will need to add a specific DNS TXT record to confirm that you are the owner of the domain."
+    },
+    "modal": {
+        "title": "Verify {domain}",
+        "description": "Configure your DNS records to validate ownership",
+        "provider_label": "Select your DNS provider",
+        "txt_label": "TXT record required",
+        "table": {
+            "type": "Type",
+            "name": "Name",
+            "value": "Value",
+            "ttl": "TTL"
+        },
+        "warning": "DNS propagation can take from 2 to 24 hours.",
+        "close": "Close",
+        "confirmed": "I added the record"
+    }
+}

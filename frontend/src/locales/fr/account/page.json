@@ -1,0 +1,12 @@
+{
+    "title": "Paramètres du compte",
+    "description": "Gérez votre compte Octara Search.",
+    "profile": {
+        "display_name": "Nom d'affichage",
+        "edit": "Modifier le profil"
+    },
+    "history": {
+        "title": "Historique de recherche",
+        "description": "Enregistrer vos requêtes pour des suggestions rapides"
+    }
+}

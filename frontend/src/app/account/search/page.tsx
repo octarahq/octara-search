@@ -5,8 +5,11 @@ import { Link } from "@/components/ui/Link";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "../_components/Sidebar";
+import { useTranslations } from "next-intl";
 
 export default function SearchSettingsPage() {
+  const t = useTranslations("account_search");
+  const tAuth = useTranslations("common.auth");
   const {
     user,
     isLoading,
@@ -29,15 +32,15 @@ export default function SearchSettingsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-4xl font-black text-white mb-6">Accès Restreint</h1>
-        <p className="text-zinc-400 mb-8 max-w-md">
-          Veuillez vous connecter pour accéder à vos paramètres de compte.
-        </p>
+        <h1 className="text-4xl font-black text-white mb-6">
+          {tAuth("restricted_access")}
+        </h1>
+        <p className="text-zinc-400 mb-8 max-w-md">{tAuth("login_required")}</p>
         <Link
           href="/"
           className="px-8 py-3 bg-emerald-500 text-emerald-950 font-bold rounded-xl hover:bg-emerald-400 transition-all"
         >
-          Retour à l'accueil
+          {tAuth("back_home")}
         </Link>
       </div>
     );
@@ -46,30 +49,28 @@ export default function SearchSettingsPage() {
   const safeSearchLevels = [
     {
       id: "off",
-      name: "Désactivé",
+      name: t("safesearch.off.name"),
       icon: "no_adult_content",
-      description: "Aucun filtrage. Affiche tous les résultats tels quels.",
+      description: t("safesearch.off.description"),
     },
     {
       id: "moderate",
-      name: "Modéré",
+      name: t("safesearch.moderate.name"),
       icon: "verified_user",
-      description:
-        "Floute le contenu sensible. Vous pouvez choisir de dévoiler certains résultats.",
+      description: t("safesearch.moderate.description"),
     },
     {
       id: "strict",
-      name: "Strict",
+      name: t("safesearch.strict.name"),
       icon: "lock_person",
-      description:
-        "Sécurité maximale. Masque les résultats signalés comme NSFW.",
+      description: t("safesearch.strict.description"),
     },
   ];
 
   const languages = [
-    { code: "auto", name: "Détection automatique (Auto)" },
-    { code: "fr", name: "Français" },
-    { code: "en", name: "English" },
+    { code: "auto", name: t("language_options.auto") },
+    { code: "fr", name: t("language_options.fr") },
+    { code: "en", name: t("language_options.en") },
   ];
 
   const resultsOptions = [10, 20, 50, 100];
@@ -84,12 +85,9 @@ export default function SearchSettingsPage() {
         <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 max-w-5xl">
           <header className="mb-12">
             <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 mb-2 font-headline">
-              Paramètres de Recherche
+              {t("title")}
             </h1>
-            <p className="text-slate-400 max-w-2xl">
-              Configurez la manière dont Octara Search récupère et affiche vos
-              résultats.
-            </p>
+            <p className="text-slate-400 max-w-2xl">{t("description")}</p>
           </header>
 
           <div className="grid grid-cols-1 gap-12">
@@ -98,7 +96,7 @@ export default function SearchSettingsPage() {
                 <span className="material-symbols-outlined text-emerald-400">
                   shield
                 </span>
-                Niveaux SafeSearch
+                {t("safesearch.title")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {safeSearchLevels.map((level) => (
@@ -137,11 +135,10 @@ export default function SearchSettingsPage() {
               <div className="flex items-center justify-between p-6 bg-slate-900/30 rounded-2xl border border-slate-800/20">
                 <div>
                   <h4 className="text-white font-bold mb-1">
-                    Ouvrir les liens dans un nouvel onglet
+                    {t("toggles.new_tab.title")}
                   </h4>
                   <p className="text-xs text-slate-500">
-                    Gardez votre session de recherche active pendant la
-                    navigation.
+                    {t("toggles.new_tab.description")}
                   </p>
                 </div>
                 <button
@@ -158,10 +155,10 @@ export default function SearchSettingsPage() {
               <div className="flex items-center justify-between p-6 bg-slate-900/30 rounded-2xl border border-slate-800/20">
                 <div>
                   <h4 className="text-white font-bold mb-1">
-                    Suggestions de recherche
+                    {t("toggles.suggestions.title")}
                   </h4>
                   <p className="text-xs text-slate-500">
-                    Affiche des requêtes prédictives pendant la saisie.
+                    {t("toggles.suggestions.description")}
                   </p>
                 </div>
                 <button
@@ -185,7 +182,7 @@ export default function SearchSettingsPage() {
                       language
                     </span>
                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                      Langue de recherche
+                      {t("language")}
                     </label>
                   </div>
                   <div className="relative">
@@ -220,7 +217,7 @@ export default function SearchSettingsPage() {
                       list
                     </span>
                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                      Résultats par page
+                      {t("results_per_page")}
                     </label>
                   </div>
                   <div className="flex gap-3">

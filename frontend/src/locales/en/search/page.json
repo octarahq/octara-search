@@ -1,0 +1,16 @@
+{
+    "results_stats": "About {total} results in {time} ms",
+    "results_for": "Results for",
+    "did_you_mean": "Did you mean:",
+    "no_results": "No results found for this search.",
+    "sensitive_content": "Potentially sensitive content",
+    "show_content": "Show content",
+    "score_analysis": "Score Analysis",
+    "relevance_score": "Relevance score",
+    "detected_lang": "Detected language",
+    "metadata": {
+        "title_default": "Search",
+        "description_query": "Octara search results for: {query}. Explore the web intelligently.",
+        "description_default": "Search the web with Octara, the ultra-fast search engine."
+    }
+}

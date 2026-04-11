@@ -10,8 +10,12 @@ import { Navbar } from "@/components/Navbar";
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
+  const t = useTranslations("home");
+  const tf = useTranslations("common.footer");
+  const tn = useTranslations("common.navbar");
   const router = useRouter();
   const [query, setQuery] = useState("");
   const { user, history, addToHistory, searchSuggestions } = useAuth();
@@ -87,21 +91,18 @@ export default function Home() {
   const features = [
     {
       icon: "speed",
-      title: "Recherche Rapide",
-      description:
-        "Accédez instantanément aux informations dont vous avez besoin grâce à notre moteur optimisée pour la vitesse.",
+      title: t("features.speed.title"),
+      description: t("features.speed.description"),
     },
     {
       icon: "verified_user",
-      title: "Vie Privée d'Abord",
-      description:
-        "Recherchez en toute confidence. Vos données sont cryptées et ne sont jamais vendues à des tiers.",
+      title: t("features.privacy.title"),
+      description: t("features.privacy.description"),
     },
     {
       icon: "dashboard",
-      title: "Zéro Distraction",
-      description:
-        "Une interface épurée et sans publicité invasive, conçue pour se concentrer uniquement sur vos recherches.",
+      title: t("features.zdistraction.title"),
+      description: t("features.zdistraction.description"),
     },
   ];
 
@@ -134,7 +135,7 @@ export default function Home() {
               </button>
               <input
                 className="bg-transparent border-none focus:ring-0 w-full text-base md:text-xl text-zinc-100 placeholder:text-zinc-700 font-body py-4 md:py-6 outline-none"
-                placeholder="Rechercher sur le web..."
+                placeholder={t("placeholder")}
                 type="text"
                 autoComplete="off"
                 onFocus={() => setIsFocused(true)}
@@ -162,7 +163,7 @@ export default function Home() {
                   {query.length >= 2 && suggestions.length > 0 && (
                     <div className="mb-2 px-6">
                       <span className="text-[10px] font-black text-emerald-500/50 uppercase tracking-widest">
-                        Suggestions
+                        {tn("suggestions")}
                       </span>
                     </div>
                   )}
@@ -184,7 +185,7 @@ export default function Home() {
                     <>
                       <div className="mb-2 px-6">
                         <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
-                          Historique récent
+                          {tn("history")}
                         </span>
                       </div>
                       {history.map((h, i) => (
@@ -211,14 +212,14 @@ export default function Home() {
               onClick={() => handleSearch()}
               className="px-5 py-2 text-sm md:text-base md:px-8 md:py-3"
             >
-              Rechercher
+              {t("search_button")}
             </Button>
             <Button
               variant="outline"
               className="bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 text-zinc-400 px-5 py-2 text-sm md:text-base md:px-8 md:py-3"
               onClick={handleLuckySearch}
             >
-              J&apos;ai de la chance
+              {t("lucky_button")}
             </Button>
           </div>
 
@@ -243,21 +244,21 @@ export default function Home() {
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-zinc-500">
           <div className="flex items-center gap-4 md:gap-6 text-[10px] md:text-sm font-medium">
             <Link href="/privacy" preserveHostLink variant="footer">
-              Confidentialité
+              {tf("privacy")}
             </Link>
             <Link href="/terms" preserveHostLink variant="footer">
-              Conditions
+              {tf("terms")}
             </Link>
             <Link href="/status" preserveHostLink variant="footer">
-              Statut
+              {tf("status")}
             </Link>
           </div>
           <div className="flex items-center gap-4 md:gap-6 text-[10px] md:text-sm font-medium">
             <Link href="/about" preserveHostLink variant="footer">
-              À propos
+              {tf("about")}
             </Link>
             <Link href="/" preserveHostLink variant="footer">
-              Entreprise
+              {tf("company")}
             </Link>
           </div>
         </div>
