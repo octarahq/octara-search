@@ -1,32 +1,39 @@
 import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
+import { normalizeUrl } from "./parser";
 
 const DB_PATH = path.resolve(__dirname, "../../data/queue.sqlite");
 
 export interface QueueItem {
   url: string;
   depth: number;
+  recursive: boolean;
 }
 
 export class QueueManager {
   private db: Database.Database;
 
-  constructor() {
+  constructor(memory = false) {
     const dataDir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dataDir)) {
+    if (!fs.existsSync(dataDir) && !memory) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
-    this.db = new Database(DB_PATH);
+    this.db = new Database(memory ? ":memory:" : DB_PATH);
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS queue (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         url TEXT UNIQUE,
         domain TEXT,
-        depth INTEGER
+        depth INTEGER,
+        recursive BOOLEAN DEFAULT 1
       )
     `);
+
+    try {
+      this.db.exec("ALTER TABLE queue ADD COLUMN recursive BOOLEAN DEFAULT 1");
+    } catch (e) {}
 
     this.db.exec(
       `CREATE INDEX IF NOT EXISTS idx_queue_domain ON queue(domain)`,
@@ -57,8 +64,14 @@ export class QueueManager {
 
   save() {}
 
-  enqueue(url: string, depth: number = 0, atStart: boolean = false) {
+  enqueue(
+    url: string,
+    depth: number = 0,
+    atStart: boolean = false,
+    recursive: boolean = true,
+  ) {
     try {
+      url = normalizeUrl(url);
       const domain = new URL(url).hostname;
       if (atStart) {
         const minIdRow = this.db
@@ -67,15 +80,15 @@ export class QueueManager {
         const minId = minIdRow.id !== null ? minIdRow.id : 0;
         this.db
           .prepare(
-            "INSERT OR IGNORE INTO queue (id, url, domain, depth) VALUES (?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO queue (id, url, domain, depth, recursive) VALUES (?, ?, ?, ?, ?)",
           )
-          .run(minId - 1, url, domain, depth);
+          .run(minId - 1, url, domain, depth, recursive ? 1 : 0);
       } else {
         this.db
           .prepare(
-            "INSERT OR IGNORE INTO queue (url, domain, depth) VALUES (?, ?, ?)",
+            "INSERT OR IGNORE INTO queue (url, domain, depth, recursive) VALUES (?, ?, ?, ?)",
           )
-          .run(url, domain, depth);
+          .run(url, domain, depth, recursive ? 1 : 0);
       }
     } catch (e) {}
   }
@@ -85,6 +98,7 @@ export class QueueManager {
     url: string;
     domain: string;
     depth: number;
+    recursive: number;
   }[] = [];
   private recentDomains: string[] = [];
 
@@ -92,9 +106,15 @@ export class QueueManager {
     if (this.memoryBuffer.length === 0) {
       const rows = this.db
         .prepare(
-          "SELECT id, url, domain, depth FROM queue ORDER BY id ASC LIMIT 2000",
+          "SELECT id, url, domain, depth, recursive FROM queue ORDER BY id ASC LIMIT 2000",
         )
-        .all() as { id: number; url: string; domain: string; depth: number }[];
+        .all() as {
+        id: number;
+        url: string;
+        domain: string;
+        depth: number;
+        recursive: number;
+      }[];
       if (rows.length === 0) return undefined;
 
       const stmt = this.db.prepare("DELETE FROM queue WHERE id = ?");
@@ -119,7 +139,11 @@ export class QueueManager {
     }
 
     const item = this.memoryBuffer.splice(selectedIndex, 1)[0];
-    return { url: item.url, depth: item.depth };
+    return {
+      url: item.url,
+      depth: item.depth,
+      recursive: item.recursive === 1,
+    };
   }
 
   resetDepths(newDepth: number) {

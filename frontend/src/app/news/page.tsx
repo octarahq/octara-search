@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 
 import { useState, useEffect, Suspense } from "react";
+import { useTranslations } from "next-intl";
 
 function NewsContent() {
+  const t = useTranslations("news");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [liveNews, setLiveNews] = useState<any[]>([]);
@@ -26,11 +28,11 @@ function NewsContent() {
       const diffHour = Math.floor(diffMs / (1000 * 60 * 60));
       const diffDay = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-      if (diffMin < 1) return "à l'instant";
-      if (diffMin < 60) return `il y a ${diffMin} min`;
-      if (diffHour < 24) return `il y a ${diffHour} h`;
-      if (diffDay < 7) return `il y a ${diffDay} j`;
-      return date.toLocaleDateString("fr-FR", {
+      if (diffMin < 1) return t("date.just_now");
+      if (diffMin < 60) return t("date.minutes_ago", { count: diffMin });
+      if (diffHour < 24) return t("date.hours_ago", { count: diffHour });
+      if (diffDay < 7) return t("date.days_ago", { count: diffDay });
+      return date.toLocaleDateString(undefined, {
         day: "numeric",
         month: "short",
       });
@@ -147,7 +149,7 @@ function NewsContent() {
         <div className="flex items-center gap-1.5 md:gap-2">
           <span className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-emerald-500" />
           <span className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-            Flash News
+            {t("flash")}
           </span>
         </div>
       </div>
@@ -209,9 +211,7 @@ function NewsContent() {
               <span className="material-symbols-outlined text-zinc-800 text-6xl mb-4">
                 search_off
               </span>
-              <p className="text-zinc-500">
-                Aucun article trouvé pour votre recherche.
-              </p>
+              <p className="text-zinc-500">{t("no_articles")}</p>
             </div>
           )}
 
@@ -282,7 +282,7 @@ function NewsContent() {
                 )}
               </div>
               <div className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">
-                Octara © 2026 • Intelligent News Engine
+                Octara © 2026 • {t("engine")}
               </div>
             </footer>
           )}

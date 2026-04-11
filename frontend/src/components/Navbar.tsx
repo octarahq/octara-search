@@ -128,7 +128,7 @@ export const Navbar = ({ initialQuery = "" }: NavbarProps) => {
                 (query.length >= 2
                   ? suggestions.length > 0
                   : history.length > 0) && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 py-2">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-y-auto max-h-64 z-50 py-2 custom-scrollbar">
                     {query.length >= 2 && suggestions.length > 0 && (
                       <div className="mb-1 pointer-events-none px-4 py-1">
                         <span className="text-[10px] font-black text-emerald-500/50 uppercase tracking-widest">

@@ -65,4 +65,10 @@ router.get("/autocomplete", async (req: Request, res: Response) => {
   res.json({ results: suggestions });
 });
 
+router.post("/reload", async (req: Request, res: Response) => {
+  console.log("[API Search] Reloading index requested...");
+  await searchService.loadIndex();
+  res.json({ success: true });
+});
+
 export default router;

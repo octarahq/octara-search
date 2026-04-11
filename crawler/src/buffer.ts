@@ -12,7 +12,7 @@ interface PageEntry {
 
 export class DbBuffer {
   private buffer: PageEntry[] = [];
-  private limit = 100;
+  private limit = 20;
   public totalInserted = 0;
 
   async add(entry: PageEntry) {
@@ -25,9 +25,17 @@ export class DbBuffer {
   async flush() {
     if (this.buffer.length === 0) return;
 
+    const toFlush = [...this.buffer];
+    this.buffer = [];
+
+    // Deduplicate by URL to avoid PostgresError (row affected twice in same command)
+    const uniqueMap = new Map();
+    toFlush.forEach((item) => uniqueMap.set(item.url, item));
+    const unique: PageEntry[] = Array.from(uniqueMap.values());
+
     try {
       await sql`
-        INSERT INTO pages ${sql(this.buffer, "url", "title", "description", "snippet", "language", "content_hash", "nsfw")}
+        INSERT INTO pages ${sql(unique as any, "url", "title", "description", "snippet", "language", "content_hash", "nsfw")}
         ON CONFLICT (url) DO UPDATE SET
           title = EXCLUDED.title,
           description = EXCLUDED.description,
@@ -37,14 +45,9 @@ export class DbBuffer {
           nsfw = EXCLUDED.nsfw,
           crawled_at = NOW()
       `;
-      this.totalInserted += this.buffer.length;
-      console.log(
-        `[Buffer] Flushed ${this.buffer.length} records. Total: ${this.totalInserted}`,
-      );
+      this.totalInserted += unique.length;
     } catch (e) {
       console.error("[Buffer] Flush error:", e);
-    } finally {
-      this.buffer = [];
     }
   }
 }

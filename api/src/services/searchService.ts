@@ -1,15 +1,5 @@
 import MiniSearch from "minisearch";
-import postgres from "postgres";
-import fs from "node:fs";
-import path from "node:path";
-
-const configPath = path.resolve(__dirname, "../../../config.json");
-const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-
-const sql = postgres(config.databaseUrl, {
-  max: 10,
-  idle_timeout: 20,
-});
+import { sql } from "./db";
 
 const miniSearchOptions = {
   fields: ["url", "title", "description", "snippet", "language"],

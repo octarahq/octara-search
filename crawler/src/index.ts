@@ -16,9 +16,18 @@ import { DbBuffer } from "./buffer";
 import { DomainLimiter } from "./limiter";
 import { HostCache } from "./host-cache";
 
-const SEED_URLS: string[] = ["https://www.allocine.fr/"];
+const args = process.argv.slice(2);
+const WORKER_MODE = args.includes("--worker");
+const WORKER_URLS =
+  args
+    .find((a) => a.startsWith("--urls="))
+    ?.split("=")[1]
+    ?.split(",") || [];
+const WORKER_RECURSIVE = !args.includes("--norecurse");
+
+const SEED_URLS: string[] = WORKER_MODE ? [] : ["https://www.allocine.fr/"];
 const MAX_PAGES_TO_CRAWL = Number.MAX_SAFE_INTEGER;
-const CONCURRENCY = 150;
+const CONCURRENCY = WORKER_MODE ? 50 : 150;
 const FETCHES_PER_MIN_PER_DOMAIN = 1200;
 
 const FRESH_START = false;
@@ -28,7 +37,7 @@ const REFRESH_INTERVAL_HOURS = 24;
 const ALLOWED_DOMAIN = "";
 
 const FORCED_CRAWL_DEPTH = 5;
-const IDLE_START = process.env.IDLE_START === "true";
+const IDLE_START = process.env.IDLE_START === "true" && !WORKER_MODE;
 
 let pagesCrawled = 0;
 let errorsCount = 0;
@@ -39,6 +48,8 @@ let isIdling = false;
 let lastPages: { url: string; domain: string }[] = [];
 let startTime = Date.now();
 const activeClients = new Set<net.Socket>();
+const missionUrls = new Set<string>();
+const activeCrawls = new Set<string>();
 const activeWorkers = new Set<Promise<void>>();
 
 function handleStop(reason: string = "Manuel") {
@@ -50,8 +61,9 @@ function handleStop(reason: string = "Manuel") {
 }
 
 const bloom = new BloomManager();
-const queue = new QueueManager();
+const queue = new QueueManager(WORKER_MODE);
 const dbBuffer = new DbBuffer();
+if (WORKER_MODE) (dbBuffer as any).limit = 1;
 const limiter = new DomainLimiter(FETCHES_PER_MIN_PER_DOMAIN);
 const hostCache = new HostCache();
 
@@ -88,7 +100,7 @@ function isUrlAllowed(url: string, allowed: string): boolean {
     if (forbiddenExts.some((ext) => lowercaseUrl.endsWith(ext))) return false;
 
     const segments = u.pathname.split("/").filter((s) => s.length > 0);
-    if (segments.length > 2) return false;
+    if (segments.length > 10) return false;
 
     return true;
   } catch {
@@ -157,13 +169,22 @@ function setupRemoteMonitor(queueProvider: () => number) {
       }
 
       if (cmd.startsWith("crawl ")) {
-        const url = cmd.split(" ").slice(1).join(" ").trim();
+        const parts = raw.split(" ").slice(1);
+        let recursive = true;
+        const urlIndex = parts.findIndex((p) => !p.startsWith("--"));
+        const noRecurseIndex = parts.indexOf("--norecurse");
+
+        if (noRecurseIndex !== -1) {
+          recursive = false;
+        }
+
+        const url = parts[urlIndex]?.trim();
         if (url) {
           try {
             const norm = normalizeUrl(url);
-            queue.enqueue(norm, 0);
+            queue.enqueue(norm, 0, false, recursive);
             if (onSeedAdded) onSeedAdded();
-            socket.write(`ADDED: ${norm}\n`);
+            socket.write(`ADDED: ${norm} (recursive: ${recursive})\n`);
             broadcastStats();
           } catch (e) {
             socket.write(`ERROR: Invalid URL\n`);
@@ -198,9 +219,12 @@ function setupLocalInput() {
 
 async function start() {
   await initDb();
-  setupLocalInput();
+  if (!WORKER_MODE) setupLocalInput();
 
-  if (IDLE_START) {
+  if (WORKER_MODE) {
+    console.log(`[Worker] Starting mission for ${WORKER_URLS.length} URLs...`);
+    WORKER_URLS.forEach((u) => queue.enqueue(u, 0, false, WORKER_RECURSIVE));
+  } else if (IDLE_START) {
     console.log(
       "\x1b[35m[Crawler] Mode IDLE activé. Le crawler attend des instructions...\x1b[0m",
     );
@@ -209,7 +233,9 @@ async function start() {
     await queue.load(SEED_URLS, FRESH_START);
   }
 
-  const monitorServer = setupRemoteMonitor(() => queue.length());
+  const monitorServer = !WORKER_MODE
+    ? setupRemoteMonitor(() => queue.length())
+    : null;
 
   process.on("SIGINT", () => {
     console.log("\n[Crawler] Signal d'arrêt reçu (SIGINT). Arrêt propre...");
@@ -242,6 +268,10 @@ async function start() {
 
   while (true) {
     if (!shouldStop && queue.length() === 0 && activeWorkers.size === 0) {
+      if (WORKER_MODE) {
+        console.log("\n[Worker] Mission complete. Exiting.");
+        process.exit(0);
+      }
       if (SEED_URLS.length > 0 && !IDLE_START) {
         SEED_URLS.forEach((u) => queue.enqueue(u, 0));
         SEED_URLS.length = 0;
@@ -281,6 +311,9 @@ async function start() {
           continue;
         }
 
+        if (activeCrawls.has(normUrl)) continue;
+        activeCrawls.add(normUrl);
+
         const workerPromise = (async () => {
           try {
             const domain = limiter.getHostname(normUrl);
@@ -307,8 +340,11 @@ async function start() {
 
                   urls.forEach((u) => {
                     const nu = normalizeUrl(u);
-                    if (isUrlAllowed(nu, ALLOWED_DOMAIN) && !bloom.has(nu)) {
-                      queue.enqueue(nu, depth + 1);
+                    if (
+                      isUrlAllowed(nu, ALLOWED_DOMAIN) &&
+                      (WORKER_MODE || !bloom.has(nu))
+                    ) {
+                      queue.enqueue(nu, depth + 1, false, false);
                     }
                   });
 
@@ -344,26 +380,29 @@ async function start() {
 
             const html = await fetchPage(normUrl);
             const parsed = parseHtml(html, normUrl);
-            if (parsed.sitemaps.length > 0) {
-              hostCache.addSitemaps(domain, parsed.sitemaps.slice(0, 50));
-            }
 
-            parsed.links.forEach((l) => {
-              if (isUrlAllowed(l, ALLOWED_DOMAIN)) {
-                const linkDomain = limiter.getHostname(l);
-
-                if (
-                  linkDomain !== domain &&
-                  !hostCache.getSitemaps(linkDomain).length
-                ) {
-                  queue.enqueue(`https://${linkDomain}/`, 0);
-                }
-
-                if (!bloom.has(l)) {
-                  queue.enqueue(l, depth + 1);
-                }
+            if (item.recursive) {
+              if (parsed.sitemaps.length > 0) {
+                hostCache.addSitemaps(domain, parsed.sitemaps.slice(0, 50));
               }
-            });
+
+              parsed.links.forEach((l) => {
+                if (isUrlAllowed(l, ALLOWED_DOMAIN)) {
+                  const linkDomain = limiter.getHostname(l);
+
+                  if (
+                    linkDomain !== domain &&
+                    !hostCache.getSitemaps(linkDomain).length
+                  ) {
+                    queue.enqueue(`https://${linkDomain}/`, 0);
+                  }
+
+                  if (!bloom.has(l)) {
+                    queue.enqueue(l, depth + 1);
+                  }
+                }
+              });
+            }
 
             await dbBuffer.add({
               url: normUrl,
@@ -375,6 +414,7 @@ async function start() {
               nsfw: parsed.nsfw,
             });
             bloom.add(normUrl);
+            missionUrls.add(normUrl);
             pagesCrawled++;
             lastPages.unshift({
               url: normUrl,
@@ -384,6 +424,8 @@ async function start() {
           } catch (e: any) {
             console.error(`Error crawling ${normUrl}:`, e.message);
             errorsCount++;
+          } finally {
+            activeCrawls.delete(normUrl);
           }
         })();
 
@@ -414,14 +456,19 @@ async function start() {
     queue.save();
     hostCache.save();
 
-    if (shouldStop) {
+    if (shouldStop || WORKER_MODE) {
       console.log(
-        "\x1b[1m\x1b[33m[Indexer] Lancement de l'indexation post-crawl...\x1b[0m",
+        `\x1b[1m\x1b[33m[Indexer] Lancement de l'indexation ${WORKER_MODE ? "incrémentielle" : "complète"}...\x1b[0m`,
       );
       try {
         const rootDir = path.resolve(__dirname, "../../");
         const { spawn } = require("node:child_process");
-        spawn("npm", ["run", "start:indexer"], {
+        const indexerArgs = ["run", "start:indexer"];
+        if (WORKER_MODE && missionUrls.size > 0) {
+          indexerArgs.push("--", `--urls=${Array.from(missionUrls).join(",")}`);
+        }
+
+        spawn("npm", indexerArgs, {
           cwd: rootDir,
           stdio: "ignore",
           detached: true,

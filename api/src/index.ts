@@ -5,6 +5,7 @@ import path from "node:path";
 
 import searchRouter from "./routes/search";
 import newsRouter from "./routes/news";
+import subdomainRouter from "./routes/subdomains";
 import * as searchService from "./services/searchService";
 import * as newsService from "./services/newsService";
 
@@ -25,6 +26,7 @@ app.use(express.json());
 
 app.use("/api/search", searchRouter);
 app.use("/api/news", newsRouter);
+app.use("/api/subdomains", subdomainRouter);
 
 app.get("/api/stats", async (req: Request, res: Response) => {
   const searchStats = await searchService.getStats();
@@ -53,4 +55,18 @@ app.listen(PORT, async () => {
 
   console.log(`[API] Starting news sync...`);
   newsService.fullRefresh();
+});
+
+// Prevent crash on unhandled errors (e.g. ETIMEDOUT from DB or external APIs)
+process.on("uncaughtException", (err) => {
+  console.error("[Fatal Error] Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error(
+    "[Fatal Error] Unhandled Rejection at:",
+    promise,
+    "reason:",
+    reason,
+  );
 });

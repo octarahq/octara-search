@@ -1,0 +1,15 @@
+{
+    "metadata": {
+        "title": "Actualités - Octara",
+        "description": "Suivez l'actualité en temps réel avec Octara News."
+    },
+    "date": {
+        "just_now": "à l'instant",
+        "minutes_ago": "il y a {count} min",
+        "hours_ago": "il y a {count} h",
+        "days_ago": "il y a {count} j"
+    },
+    "no_articles": "Aucun article trouvé pour votre recherche.",
+    "flash": "Flash News",
+    "engine": "Moteur d'actualité intelligent"
+}

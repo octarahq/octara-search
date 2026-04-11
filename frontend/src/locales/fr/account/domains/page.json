@@ -17,7 +17,11 @@
             "failed": "Échoué"
         },
         "verify": "Vérifier",
-        "verifying": "Vérification..."
+        "verifying": "Vérification...",
+        "dns": {
+            "auto_config": "Configuration en 1 clic",
+            "manual_guide": "Guide manuel"
+        }
     },
     "how_to": {
         "title": "Comment vérifier mon domaine ?",
@@ -37,5 +41,52 @@
         "warning": "La propagation DNS peut prendre de 2 à 24 heures.",
         "close": "Fermer",
         "confirmed": "J'ai ajouté le record"
+    },
+    "details": {
+        "title": "Détails: {domain}",
+        "description": "Gérez vos sous-domaines pour ce domaine",
+        "add_placeholder": "exemple.{domain}",
+        "add_button": "Ajouter",
+        "add_title": "Ajouter un sous-domaine",
+        "list_title": "Sous-domaines",
+        "search_placeholder": "Rechercher un sous-domaine...",
+        "empty": "Aucun sous-domaine trouvé",
+        "close": "Fermer",
+        "index": {
+            "loading": "Chargement des données de l'index...",
+            "loading_desc": "Nous récupérons la structure de {host}",
+            "title": "Structure du site",
+            "pages_count": "Pages indexées ({count})",
+            "no_pages": "Aucune page trouvées pour ce domaine dans l'index.",
+            "untitled": "Sans titre"
+        },
+        "sitemap": {
+            "recrawl_all": "Recrawler tout le Sitemap",
+            "refresh": "Rafraîchir",
+            "explore": "Explorer le Sitemap",
+            "analyzing": "Analyse du sitemap en cours...",
+            "hint": "Appuyez sur le bouton pour tenter de récupérer le sitemap XML du site."
+        },
+        "delete_modal": {
+            "title": "Supprimer {subdomain} ?",
+            "description": "Choisissez comment vous souhaitez traiter les données associées à ce sous-domaine. Cette opération est irréversible.",
+            "full_clean": "Nettoyage complet",
+            "full_clean_desc": "Supprime le domaine ET déréférence toutes ses pages de l'index.",
+            "simple_remove": "Simple retrait",
+            "simple_remove_desc": "Retire le domaine de votre liste uniquement. L'index reste inchangé.",
+            "cancel": "Annuler"
+        },
+        "notifications": {
+            "recrawl_start": "Lancement du recrawl pour {count} page(s)...",
+            "recrawl_sitemap_success": "Mission de recrawl du sitemap lancée !",
+            "recrawl_success": "Demande de recrawl envoyée avec succès.",
+            "recrawl_error": "Échec du lancement du recrawl. Réessayez plus tard.",
+            "delete_page_confirm": "Voulez-vous vraiment supprimer cette page de l'index de recherche ?\n\n{url}",
+            "delete_page_success": "Page supprimée de l'index avec succès.",
+            "delete_page_error": "Erreur lors de la suppression de la page.",
+            "mission_status": "Mission en cours",
+            "error_status": "Erreur technique",
+            "success_status": "Action terminée"
+        }
     }
 }

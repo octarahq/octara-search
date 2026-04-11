@@ -19,6 +19,15 @@ export async function fetchPages(limit: number, offset: number) {
   return sql`SELECT url, title, description, snippet, language, nsfw FROM pages ORDER BY url LIMIT ${limit} OFFSET ${offset}`;
 }
 
+export async function loadIndex() {
+  const result = await sql`SELECT index_data FROM search_index WHERE id = 1`;
+  return result[0]?.index_data;
+}
+
+export async function fetchSpecificPages(urls: string[]) {
+  return sql`SELECT url, title, description, snippet, language, nsfw FROM pages WHERE url IN ${sql(urls)}`;
+}
+
 export async function saveIndex(indexData: string) {
   await sql`
     INSERT INTO search_index (id, index_data) VALUES (1, ${indexData})

@@ -17,7 +17,11 @@
             "failed": "Failed"
         },
         "verify": "Verify",
-        "verifying": "Verifying..."
+        "verifying": "Verifying...",
+        "dns": {
+            "auto_config": "1-click configuration",
+            "manual_guide": "Manual guide"
+        }
     },
     "how_to": {
         "title": "How to verify my domain?",
@@ -37,5 +41,52 @@
         "warning": "DNS propagation can take from 2 to 24 hours.",
         "close": "Close",
         "confirmed": "I added the record"
+    },
+    "details": {
+        "title": "Details: {domain}",
+        "description": "Manage your subdomains for this domain",
+        "add_placeholder": "example.{domain}",
+        "add_button": "Add",
+        "add_title": "Add a subdomain",
+        "list_title": "Subdomains",
+        "search_placeholder": "Search for a subdomain...",
+        "empty": "No subdomains found",
+        "close": "Close",
+        "index": {
+            "loading": "Loading index data...",
+            "loading_desc": "We are fetching the structure of {host}",
+            "title": "Site Structure",
+            "pages_count": "Indexed Pages ({count})",
+            "no_pages": "No pages found for this domain in the index.",
+            "untitled": "Untitled"
+        },
+        "sitemap": {
+            "recrawl_all": "Recrawl entire Sitemap",
+            "refresh": "Refresh",
+            "explore": "Explore Sitemap",
+            "analyzing": "Analyzing sitemap...",
+            "hint": "Press the button to try fetching the site's XML sitemap."
+        },
+        "delete_modal": {
+            "title": "Delete {subdomain}?",
+            "description": "Choose how you want to handle the data associated with this subdomain. This operation is irreversible.",
+            "full_clean": "Full Cleanup",
+            "full_clean_desc": "Deletes the domain AND dereferences all its pages from the index.",
+            "simple_remove": "Simple Removal",
+            "simple_remove_desc": "Removes the domain from your list only. The index remains unchanged.",
+            "cancel": "Cancel"
+        },
+        "notifications": {
+            "recrawl_start": "Launching recrawl for {count} page(s)...",
+            "recrawl_sitemap_success": "Sitemap recrawl mission launched!",
+            "recrawl_success": "Recrawl request sent successfully.",
+            "recrawl_error": "Failed to launch recrawl. Try again later.",
+            "delete_page_confirm": "Do you really want to delete this page from the search index?\n\n{url}",
+            "delete_page_success": "Page successfully removed from index.",
+            "delete_page_error": "Error deleting the page.",
+            "mission_status": "Mission in progress",
+            "error_status": "Technical error",
+            "success_status": "Action completed"
+        }
     }
 }

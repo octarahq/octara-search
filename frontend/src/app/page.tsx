@@ -159,7 +159,7 @@ export default function Home() {
               (query.length >= 2
                 ? suggestions.length > 0
                 : history.length > 0) && (
-                <div className="absolute top-full left-4 right-4 mt-4 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden z-20 py-4 text-left">
+                <div className="absolute top-full left-4 right-4 mt-4 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-y-auto max-h-80 z-20 py-4 text-left custom-scrollbar">
                   {query.length >= 2 && suggestions.length > 0 && (
                     <div className="mb-2 px-6">
                       <span className="text-[10px] font-black text-emerald-500/50 uppercase tracking-widest">

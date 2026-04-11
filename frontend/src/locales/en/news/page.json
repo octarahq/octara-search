@@ -1,0 +1,15 @@
+{
+    "metadata": {
+        "title": "News - Octara",
+        "description": "Follow live news with Octara News."
+    },
+    "date": {
+        "just_now": "just now",
+        "minutes_ago": "{count}m ago",
+        "hours_ago": "{count}h ago",
+        "days_ago": "{count}d ago"
+    },
+    "no_articles": "No articles found for your search.",
+    "flash": "Flash News",
+    "engine": "Intelligent News Engine"
+}

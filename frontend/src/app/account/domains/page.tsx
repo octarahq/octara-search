@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "../_components/Sidebar";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 interface Domain {
   id: string;
@@ -20,6 +21,7 @@ export default function DomainsPage() {
   const tAuth = useTranslations("common.auth");
   const tAcc = useTranslations("common.account");
   const { user, token, isLoading } = useAuth();
+  const router = useRouter();
   const [domains, setDomains] = useState<Domain[]>([]);
   const [newDomain, setNewDomain] = useState("");
   const [isAdding, setIsAdding] = useState(false);
@@ -45,11 +47,6 @@ export default function DomainsPage() {
       icon: "cloud",
       url: (d: string, v: string) => getCloudflareLink(d, v),
       isAuto: true,
-    },
-    {
-      name: "Google Domains",
-      icon: "language",
-      url: () => "https://domains.google.com",
     },
     { name: "GoDaddy", icon: "shield", url: () => "https://godaddy.com" },
     {
@@ -270,7 +267,15 @@ export default function DomainsPage() {
                   domains.map((domain) => (
                     <div
                       key={domain.id}
-                      className="group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-slate-950/40 rounded-3xl border border-white/5 hover:border-emerald-500/30 transition-all"
+                      onClick={() => {
+                        if (domain.status === "VERIFIED") {
+                          router.push(`/account/domains/${domain.domain}`);
+                        } else {
+                          setSelectedDomain(domain);
+                          setShowModal(true);
+                        }
+                      }}
+                      className="group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-slate-950/40 rounded-3xl border border-white/5 hover:border-emerald-500/30 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-4 mb-4 md:mb-0">
                         <div
@@ -306,7 +311,10 @@ export default function DomainsPage() {
                         {domain.status !== "VERIFIED" && (
                           <div className="flex gap-2 flex-1 md:flex-none">
                             <button
-                              onClick={() => verifyDomain(domain)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                verifyDomain(domain);
+                              }}
                               disabled={verifyingIds.has(domain.id)}
                               className="flex-1 md:flex-none px-5 py-2.5 bg-emerald-500 text-emerald-950 font-bold rounded-xl hover:bg-emerald-400 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
                             >
@@ -322,7 +330,8 @@ export default function DomainsPage() {
                               )}
                             </button>
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedDomain(domain);
                                 setShowModal(true);
                               }}
@@ -336,7 +345,10 @@ export default function DomainsPage() {
                           </div>
                         )}
                         <button
-                          onClick={() => deleteDomain(domain.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteDomain(domain.id);
+                          }}
                           className="flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all"
                         >
                           <span className="material-symbols-outlined text-lg">
@@ -427,8 +439,8 @@ export default function DomainsPage() {
                         </div>
                         <span className="text-[9px] text-slate-600 group-hover:text-emerald-500/50 transition-colors">
                           {provider.isAuto
-                            ? "Configuration en 1 clic"
-                            : "Guide manuel"}
+                            ? t("list.dns.auto_config")
+                            : t("list.dns.manual_guide")}
                         </span>
                       </a>
                     );
