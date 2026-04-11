@@ -52,7 +52,7 @@ export default function AuthCallback() {
                 undefined,
             };
           }
-          document.cookie = `octara_token=${data.access_token}; path=/; max-age=${3600 * 24 * 7}; samesite=lax`;
+          document.cookie = `octara_token=${data.access_token}; path=/; max-age=${3600 * 24 * 7}; samesite=strict; secure`;
 
           window.location.href = "/";
         } else {

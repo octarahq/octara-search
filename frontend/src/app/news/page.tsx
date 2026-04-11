@@ -109,6 +109,7 @@ function NewsContent() {
     <Link
       href={item.url}
       target="_blank"
+      rel="noopener noreferrer"
       key={`${item.url}-${i}`}
       className={`relative group block overflow-hidden rounded-2xl md:rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-emerald-500/30 transition-all h-full ${
         isLead
@@ -119,6 +120,7 @@ function NewsContent() {
       <img
         src={item.image}
         alt={item.title}
+        referrerPolicy="no-referrer"
         className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-95" />
@@ -158,6 +160,7 @@ function NewsContent() {
           key={idx}
           href={item.url}
           target="_blank"
+          rel="noopener noreferrer"
           className="flex-1 min-h-0 group/item block"
         >
           <div className="flex items-center justify-between mb-0">
