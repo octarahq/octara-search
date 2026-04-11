@@ -20,6 +20,7 @@ export default getRequestConfig(async () => {
       account_domains: (
         await import(`@/locales/${locale}/account/domains/page.json`)
       ).default,
+      news: (await import(`@/locales/${locale}/news/page.json`)).default,
     },
   };
 });
