@@ -105,189 +105,157 @@ export default function DomainDetailsPage() {
     }
   }, [domain]);
 
-  if (isLoading || (isLoadingSubdomains && subdomains.length === 0)) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-4xl font-black text-white mb-6">
-          {tAuth("restricted_access")}
-        </h1>
-        <p className="text-zinc-400 mb-8 max-w-md">{tAuth("login_required")}</p>
-        <Link
-          href="/"
-          className="px-8 py-3 bg-emerald-500 text-emerald-950 font-bold rounded-xl hover:bg-emerald-400 transition-all"
-        >
-          {tAuth("back_home")}
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-manrope">
-      <Navbar />
-
-      <div className="flex pt-16">
-        <Sidebar />
-
-        <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 max-w-5xl">
-          <header className="mb-12">
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => router.push("/account/domains")}
-                className="w-12 h-12 bg-slate-900 rounded-2xl border border-white/5 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-all flex items-center justify-center group"
-              >
-                <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">
-                  arrow_back
-                </span>
-              </button>
-              <div>
-                <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 mb-1">
-                  {t("details.title", { domain })}
-                </h1>
-                <p className="text-slate-400">{t("details.description")}</p>
-              </div>
-            </div>
-          </header>
-
-          <div className="space-y-8">
-            <section className="bg-slate-900/40 rounded-[2rem] p-8 border border-slate-800/20 backdrop-blur-sm">
-              <h2 className="text-xl font-bold text-emerald-100 mb-6 flex items-center gap-2">
-                <span className="material-symbols-outlined text-emerald-500">
-                  add_circle
-                </span>
-                {t("details.add_title")}
-              </h2>
-              <form onSubmit={addSubdomain} className="flex gap-4">
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={newSubdomain}
-                    onChange={(e) => setNewSubdomain(e.target.value)}
-                    placeholder={t("details.add_placeholder", { domain })}
-                    className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-4 px-6 text-emerald-100 font-bold placeholder:text-slate-600 focus:border-emerald-500/50 outline-none transition-all shadow-inner"
-                  />
-                </div>
-                <button
-                  disabled={isAddingSubdomain || !newSubdomain.trim()}
-                  className="px-8 bg-emerald-500 text-emerald-950 font-black rounded-2xl hover:bg-emerald-400 transition-all disabled:opacity-50"
-                >
-                  {isAddingSubdomain ? "..." : t("details.add_button")}
-                </button>
-              </form>
-            </section>
-
-            <section className="bg-slate-900/40 rounded-[2rem] p-8 border border-slate-800/20 backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <h2 className="text-xl font-bold text-emerald-100 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-emerald-500">
-                    account_tree
-                  </span>
-                  {t("details.list_title")}
-                </h2>
-                <div className="relative w-full md:w-80">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600">
-                    search
-                  </span>
-                  <input
-                    type="text"
-                    value={subdomainSearch}
-                    onChange={(e) => setSubdomainSearch(e.target.value)}
-                    placeholder={t("details.search_placeholder")}
-                    className="w-full bg-slate-950/40 border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-emerald-100 focus:border-emerald-500/30 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                {isLoadingSubdomains ? (
-                  <div className="py-20 text-center">
-                    <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto" />
-                  </div>
-                ) : subdomains.filter((s) =>
-                    s.subdomain.includes(subdomainSearch),
-                  ).length === 0 ? (
-                  <div className="py-20 text-center bg-slate-950/20 rounded-[2rem] border border-dashed border-white/5">
-                    <span className="material-symbols-outlined text-slate-700 text-5xl mb-4">
-                      domain_disabled
-                    </span>
-                    <p className="text-slate-500 font-medium">
-                      {t("details.empty")}
-                    </p>
-                  </div>
-                ) : (
-                  subdomains
-                    .filter((s) => s.subdomain.includes(subdomainSearch))
-                    .map((sub) => {
-                      const isRoot = sub.subdomain === domain;
-                      const host = isRoot
-                        ? "@"
-                        : sub.subdomain.replace(`.${domain}`, "");
-
-                      return (
-                        <Link
-                          key={sub.id}
-                          href={`/account/domains/${domain}/${encodeURIComponent(host)}`}
-                          className="group p-6 bg-slate-950/40 rounded-[1.5rem] border border-white/5 flex items-center justify-between hover:border-emerald-500/30 transition-all cursor-pointer"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="relative">
-                              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <span
-                                  className={`material-symbols-outlined text-xl ${
-                                    sub.has_sitemap
-                                      ? "text-emerald-500"
-                                      : "text-red-500"
-                                  }`}
-                                >
-                                  {sub.has_sitemap ? "language" : "warning"}
-                                </span>
-                              </div>
-                            </div>
-                            <span className="text-lg font-bold text-emerald-50 font-mono tracking-tight">
-                              {sub.subdomain}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            {sub.has_sitemap === false && (
-                              <span className="hidden md:inline text-[10px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-1 rounded border border-red-500/10">
-                                No Sitemap
-                              </span>
-                            )}
-                            <span className="text-xs font-medium text-slate-500 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-white/5">
-                              {new Date(sub.created_at).toLocaleDateString()}
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setDeletingSubdomain(sub);
-                              }}
-                              className="w-10 h-10 rounded-xl bg-red-500/5 text-red-500/40 hover:bg-red-500/10 hover:text-red-500 border border-transparent hover:border-red-500/20 transition-all flex items-center justify-center"
-                            >
-                              <span className="material-symbols-outlined text-[20px]">
-                                delete
-                              </span>
-                            </button>
-                            <span className="material-symbols-outlined text-slate-600 group-hover:text-emerald-500 transition-colors">
-                              chevron_right
-                            </span>
-                          </div>
-                        </Link>
-                      );
-                    })
-                )}
-              </div>
-            </section>
+    <main className="p-8 md:p-12 max-w-5xl ml-0 md:ml-64">
+      <header className="mb-12">
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => router.push("/account/domains")}
+            className="w-12 h-12 bg-slate-900 rounded-2xl border border-white/5 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-all flex items-center justify-center group"
+          >
+            <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">
+              arrow_back
+            </span>
+          </button>
+          <div>
+            <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 mb-1">
+              {t("details.title", { domain })}
+            </h1>
+            <p className="text-slate-400">{t("details.description")}</p>
           </div>
-        </main>
+        </div>
+      </header>
+
+      <div className="space-y-8">
+        <section className="bg-slate-900/40 rounded-[2rem] p-8 border border-slate-800/20 backdrop-blur-sm">
+          <h2 className="text-xl font-bold text-emerald-100 mb-6 flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-500">
+              add_circle
+            </span>
+            {t("details.add_title")}
+          </h2>
+          <form onSubmit={addSubdomain} className="flex gap-4">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={newSubdomain}
+                onChange={(e) => setNewSubdomain(e.target.value)}
+                placeholder={t("details.add_placeholder", { domain })}
+                className="w-full bg-slate-950/60 border border-white/5 rounded-2xl py-4 px-6 text-emerald-100 font-bold placeholder:text-slate-600 focus:border-emerald-500/50 outline-none transition-all shadow-inner"
+              />
+            </div>
+            <button
+              disabled={isAddingSubdomain || !newSubdomain.trim()}
+              className="px-8 bg-emerald-500 text-emerald-950 font-black rounded-2xl hover:bg-emerald-400 transition-all disabled:opacity-50"
+            >
+              {isAddingSubdomain ? "..." : t("details.add_button")}
+            </button>
+          </form>
+        </section>
+
+        <section className="bg-slate-900/40 rounded-[2rem] p-8 border border-slate-800/20 backdrop-blur-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <h2 className="text-xl font-bold text-emerald-100 flex items-center gap-2">
+              <span className="material-symbols-outlined text-emerald-500">
+                account_tree
+              </span>
+              {t("details.list_title")}
+            </h2>
+            <div className="relative w-full md:w-80">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600">
+                search
+              </span>
+              <input
+                type="text"
+                value={subdomainSearch}
+                onChange={(e) => setSubdomainSearch(e.target.value)}
+                placeholder={t("details.search_placeholder")}
+                className="w-full bg-slate-950/40 border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-emerald-100 focus:border-emerald-500/30 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {isLoadingSubdomains ? (
+              <div className="py-20 text-center">
+                <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto" />
+              </div>
+            ) : subdomains.filter((s) => s.subdomain.includes(subdomainSearch))
+                .length === 0 ? (
+              <div className="py-20 text-center bg-slate-950/20 rounded-[2rem] border border-dashed border-white/5">
+                <span className="material-symbols-outlined text-slate-700 text-5xl mb-4">
+                  domain_disabled
+                </span>
+                <p className="text-slate-500 font-medium">
+                  {t("details.empty")}
+                </p>
+              </div>
+            ) : (
+              subdomains
+                .filter((s) => s.subdomain.includes(subdomainSearch))
+                .map((sub) => {
+                  const isRoot = sub.subdomain === domain;
+                  const host = isRoot
+                    ? "@"
+                    : sub.subdomain.replace(`.${domain}`, "");
+
+                  return (
+                    <Link
+                      key={sub.id}
+                      href={`/account/domains/${domain}/${encodeURIComponent(host)}`}
+                      className="group p-6 bg-slate-950/40 rounded-[1.5rem] border border-white/5 flex items-center justify-between hover:border-emerald-500/30 transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                            <span
+                              className={`material-symbols-outlined text-xl ${
+                                sub.has_sitemap
+                                  ? "text-emerald-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {sub.has_sitemap ? "language" : "warning"}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-lg font-bold text-emerald-50 font-mono tracking-tight">
+                          {sub.subdomain}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {sub.has_sitemap === false && (
+                          <span className="hidden md:inline text-[10px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-1 rounded border border-red-500/10">
+                            No Sitemap
+                          </span>
+                        )}
+                        <span className="text-xs font-medium text-slate-500 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-white/5">
+                          {new Date(sub.created_at).toLocaleDateString()}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setDeletingSubdomain(sub);
+                          }}
+                          className="w-10 h-10 rounded-xl bg-red-500/5 text-red-500/40 hover:bg-red-500/10 hover:text-red-500 border border-transparent hover:border-red-500/20 transition-all flex items-center justify-center"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            delete
+                          </span>
+                        </button>
+                        <span className="material-symbols-outlined text-slate-600 group-hover:text-emerald-500 transition-colors">
+                          chevron_right
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })
+            )}
+          </div>
+        </section>
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -372,6 +340,6 @@ export default function DomainDetailsPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

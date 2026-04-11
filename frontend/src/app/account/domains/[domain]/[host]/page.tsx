@@ -425,179 +425,138 @@ export default function HostDetailsPage() {
   const siteTree = buildTree(pages, fullHost);
   const sitemapTree = buildTree(sitemapPages, "Sitemap");
 
-  if (isLoading || (isLoadingPages && pages.length === 0)) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-8" />
-        <h2 className="text-2xl font-black text-emerald-100 animate-pulse">
-          {t("details.index.loading")}
-        </h2>
-        <p className="text-slate-500 mt-2">
-          {t("details.index.loading_desc", { host: fullHost })}
-        </p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-4xl font-black text-white mb-6">
-          {tAuth("restricted_access")}
-        </h1>
-        <p className="text-zinc-400 mb-8 max-w-md">{tAuth("login_required")}</p>
-        <Link
-          href="/"
-          className="px-8 py-3 bg-emerald-500 text-emerald-950 font-bold rounded-xl hover:bg-emerald-400 transition-all"
-        >
-          {tAuth("back_home")}
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-manrope">
-      <Navbar />
-
-      <div className="flex pt-16">
-        <Sidebar />
-
-        <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 max-w-6xl">
-          <header className="mb-12">
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => router.back()}
-                className="w-12 h-12 bg-slate-900 rounded-2xl border border-white/5 text-slate-400 hover:text-emerald-400 transition-all flex items-center justify-center group"
-              >
-                <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">
-                  arrow_back
+    <main className="p-8 md:p-12 max-w-6xl ml-0 md:ml-64">
+      <header className="mb-12">
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => router.back()}
+            className="w-12 h-12 bg-slate-900 rounded-2xl border border-white/5 text-slate-400 hover:text-emerald-400 transition-all flex items-center justify-center group"
+          >
+            <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">
+              arrow_back
+            </span>
+          </button>
+          <div className="flex items-center gap-4">
+            <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 uppercase">
+              {fullHost}
+            </h1>
+            {hasSitemap === false && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-100">
+                <span className="material-symbols-outlined text-lg">
+                  warning
                 </span>
-              </button>
-              <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-extrabold tracking-tight text-emerald-100 uppercase">
-                  {fullHost}
-                </h1>
-                {hasSitemap === false && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-400">
-                    <span className="material-symbols-outlined text-lg">
-                      warning
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest">
-                      No Sitemap
-                    </span>
-                  </div>
-                )}
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  No Sitemap
+                </span>
               </div>
-            </div>
-          </header>
+            )}
+          </div>
+        </div>
+      </header>
 
-          <div className="space-y-6">
-            <div className="bg-slate-900/40 rounded-[2.5rem] p-8 border border-slate-800/20 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                <h2 className="text-xl font-bold text-emerald-100 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-emerald-500">
-                      account_tree
-                    </span>
-                  </div>
-                  {t("details.index.pages_count", { count: pages.length })}
-                </h2>
+      <div className="space-y-6">
+        <div className="bg-slate-900/40 rounded-[2.5rem] p-8 border border-slate-800/20 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+            <h2 className="text-xl font-bold text-emerald-100 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-emerald-500">
+                  account_tree
+                </span>
               </div>
+              {t("details.index.pages_count", { count: pages.length })}
+            </h2>
+          </div>
 
-              <div className="bg-slate-950/40 rounded-3xl p-6 border border-white/5">
-                {pages.length === 0 ? (
-                  <div className="py-20 text-center">
-                    <span className="material-symbols-outlined text-slate-700 text-5xl mb-4">
-                      find_in_page
-                    </span>
-                    <p className="text-slate-500 font-medium">
-                      {t("details.index.no_pages")}
-                    </p>
-                  </div>
-                ) : (
-                  <TreeItem
-                    node={siteTree}
-                    isRoot={true}
-                    onDelete={deletePage}
-                  />
-                )}
+          <div className="bg-slate-950/40 rounded-3xl p-6 border border-white/5">
+            {pages.length === 0 ? (
+              <div className="py-20 text-center">
+                <span className="material-symbols-outlined text-slate-700 text-5xl mb-4">
+                  find_in_page
+                </span>
+                <p className="text-slate-500 font-medium">
+                  {t("details.index.no_pages")}
+                </p>
               </div>
-            </div>
+            ) : (
+              <TreeItem node={siteTree} isRoot={true} onDelete={deletePage} />
+            )}
+          </div>
+        </div>
 
-            <div className="bg-slate-900/40 rounded-[2.5rem] p-8 border border-slate-800/20 backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-4 border-b border-white/5">
-                <h2 className="text-xl font-bold text-emerald-100 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-amber-500">
-                      account_tree
-                    </span>
-                  </div>
-                  Sitemap
-                </h2>
-                <div className="flex items-center gap-3">
-                  {sitemapPages.length > 0 && (
-                    <button
-                      onClick={() => handleRecrawl(sitemapPages, false)}
-                      className="px-6 py-2.5 bg-emerald-500/10 text-emerald-400 font-bold rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-2"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        rocket_launch
-                      </span>
-                      {t("details.sitemap.recrawl_all")}
-                    </button>
-                  )}
-                  <button
-                    onClick={fetchSitemap}
-                    disabled={isFetchingSitemap}
-                    className="px-6 py-2.5 bg-slate-900 text-emerald-400 font-bold rounded-xl border border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {isFetchingSitemap ? (
-                      <div className="w-4 h-4 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-                    ) : (
-                      <span className="material-symbols-outlined text-sm">
-                        sync
-                      </span>
-                    )}
-                    {sitemapPages.length > 0
-                      ? t("details.sitemap.refresh")
-                      : t("details.sitemap.explore")}
-                  </button>
-                </div>
+        <div className="bg-slate-900/40 rounded-[2.5rem] p-8 border border-slate-800/20 backdrop-blur-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-4 border-b border-white/5">
+            <h2 className="text-xl font-bold text-emerald-100 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-amber-500">
+                  account_tree
+                </span>
               </div>
-
-              <div className="bg-slate-950/40 rounded-3xl p-6 border border-white/5">
+              Sitemap
+            </h2>
+            <div className="flex items-center gap-3">
+              {sitemapPages.length > 0 && (
+                <button
+                  onClick={() => handleRecrawl(sitemapPages, false)}
+                  className="px-6 py-2.5 bg-emerald-500/10 text-emerald-400 font-bold rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    rocket_launch
+                  </span>
+                  {t("details.sitemap.recrawl_all")}
+                </button>
+              )}
+              <button
+                onClick={fetchSitemap}
+                disabled={isFetchingSitemap}
+                className="px-6 py-2.5 bg-slate-900 text-emerald-400 font-bold rounded-xl border border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all flex items-center gap-2 disabled:opacity-50"
+              >
                 {isFetchingSitemap ? (
-                  <div className="py-20 text-center">
-                    <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-slate-500 font-medium">
-                      {t("details.sitemap.analyzing")}
-                    </p>
-                  </div>
-                ) : sitemapError ? (
-                  <div className="py-12 text-center">
-                    <span className="material-symbols-outlined text-amber-500/50 text-4xl mb-3">
-                      warning
-                    </span>
-                    <p className="text-slate-500">{sitemapError}</p>
-                  </div>
-                ) : sitemapPages.length === 0 ? (
-                  <div className="py-20 text-center">
-                    <p className="text-slate-600 font-medium max-w-sm mx-auto">
-                      {t("details.sitemap.hint")}
-                    </p>
-                  </div>
+                  <div className="w-4 h-4 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
                 ) : (
-                  <TreeItem
-                    node={sitemapTree}
-                    isRoot={true}
-                    onRecrawl={handleRecrawl}
-                  />
+                  <span className="material-symbols-outlined text-sm">
+                    sync
+                  </span>
                 )}
-              </div>
+                {sitemapPages.length > 0
+                  ? t("details.sitemap.refresh")
+                  : t("details.sitemap.explore")}
+              </button>
             </div>
           </div>
-        </main>
+
+          <div className="bg-slate-950/40 rounded-3xl p-6 border border-white/5">
+            {isFetchingSitemap ? (
+              <div className="py-20 text-center">
+                <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-slate-500 font-medium">
+                  {t("details.sitemap.analyzing")}
+                </p>
+              </div>
+            ) : sitemapError ? (
+              <div className="py-12 text-center">
+                <span className="material-symbols-outlined text-amber-500/50 text-4xl mb-3">
+                  warning
+                </span>
+                <p className="text-slate-500">{sitemapError}</p>
+              </div>
+            ) : sitemapPages.length === 0 ? (
+              <div className="py-20 text-center">
+                <p className="text-slate-600 font-medium max-w-sm mx-auto">
+                  {t("details.sitemap.hint")}
+                </p>
+              </div>
+            ) : (
+              <TreeItem
+                node={sitemapTree}
+                isRoot={true}
+                onRecrawl={handleRecrawl}
+              />
+            )}
+          </div>
+        </div>
       </div>
 
       {notification && (
@@ -649,6 +608,6 @@ export default function HostDetailsPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
