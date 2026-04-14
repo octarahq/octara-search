@@ -158,7 +158,7 @@ export default async function SearchPage({
             {query && (
               <h1 className="text-zinc-100 text-lg md:text-xl font-bold mt-1">
                 {t("results_for")}{" "}
-                <span className="text-emerald-500">"{query}"</span>
+                <span className="text-emerald-500">&quot;{query}&quot;</span>
               </h1>
             )}
             {data.correction && (
@@ -208,7 +208,7 @@ export default async function SearchPage({
               {(() => {
                 const pages = [];
                 let start = Math.max(1, page - 2);
-                let end = Math.min(data.totalPages, start + 4);
+                const end = Math.min(data.totalPages, start + 4);
 
                 if (end - start < 4) {
                   start = Math.max(1, end - 4);
