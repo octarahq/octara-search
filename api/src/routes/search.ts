@@ -44,6 +44,7 @@ router.get("/", async (req: Request, res: Response) => {
       snippet: r.snippet,
       language: r.language,
       blur: r.blur || false,
+      crawledAt: r.crawledAt,
       sitelinks: (r.sitelinks || []).map((sl: any) => ({
         url: sl.url,
         title: sl.title,
