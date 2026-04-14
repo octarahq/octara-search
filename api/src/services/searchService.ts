@@ -3,7 +3,7 @@ import { sql } from "./db";
 
 const miniSearchOptions = {
   fields: ["url", "title", "description", "snippet", "language"],
-  storeFields: ["url", "title", "description", "snippet", "language", "nsfw"],
+  storeFields: ["url", "title", "description", "snippet", "language", "nsfw", "crawledAt"],
   idField: "url",
   searchOptions: {
     boost: { url: 10, title: 5, description: 2, snippet: 1 },

@@ -16,7 +16,7 @@ export async function countPages() {
 }
 
 export async function fetchPages(limit: number, offset: number) {
-  return sql`SELECT url, title, description, snippet, language, nsfw FROM pages ORDER BY url LIMIT ${limit} OFFSET ${offset}`;
+  return sql`SELECT url, title, description, snippet, language, nsfw, crawled_at AS "crawledAt" FROM pages ORDER BY url LIMIT ${limit} OFFSET ${offset}`;
 }
 
 export async function loadIndex() {
@@ -25,7 +25,7 @@ export async function loadIndex() {
 }
 
 export async function fetchSpecificPages(urls: string[]) {
-  return sql`SELECT url, title, description, snippet, language, nsfw FROM pages WHERE url IN ${sql(urls)}`;
+  return sql`SELECT url, title, description, snippet, language, nsfw, crawled_at AS "crawledAt" FROM pages WHERE url IN ${sql(urls)}`;
 }
 
 export async function saveIndex(indexData: string) {

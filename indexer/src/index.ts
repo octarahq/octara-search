@@ -12,7 +12,7 @@ const BATCH_SIZE = 5000;
 
 const miniSearchOptions = {
   fields: ["url", "title", "description", "snippet", "language"],
-  storeFields: ["url", "title", "description", "snippet", "language", "nsfw"],
+  storeFields: ["url", "title", "description", "snippet", "language", "nsfw", "crawledAt"],
   idField: "url",
 };
 
