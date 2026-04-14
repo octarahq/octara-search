@@ -8,6 +8,8 @@
     "score_analysis": "Score Analysis",
     "relevance_score": "Relevance score",
     "detected_lang": "Detected language",
+    "crawled_at": "Crawled at",
+    "unknown": "Unknown",
     "metadata": {
         "title_default": "Search",
         "description_query": "Octara search results for: {query}. Explore the web intelligently.",
