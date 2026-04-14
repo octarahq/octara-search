@@ -13,6 +13,7 @@ interface SearchResult {
   snippet: string;
   language: string;
   blur?: boolean;
+  crawledAt?: string;
   sitelinks?: {
     url: string;
     title: string;
@@ -83,6 +84,20 @@ export const SearchResultsList = ({
                       </span>
                       <span className="text-zinc-300 font-mono text-xs font-bold uppercase">
                         {result.language}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
+                      <span className="text-zinc-500 text-[11px]">
+                        {t("crawled_at")}
+                      </span>
+                      <span className="text-zinc-300 font-mono text-xs font-bold uppercase">
+                        {result.crawledAt
+                          ? new Date(result.crawledAt).toLocaleDateString(undefined, {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : t("unknown")}
                       </span>
                     </div>
                   </div>
