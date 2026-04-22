@@ -8,7 +8,7 @@ export class BloomManager {
   private filter: BloomFilter;
 
   constructor() {
-    this.filter = BloomFilter.create(50000000, 0.01);
+    this.filter = BloomFilter.create(2_000_000, 0.01);
   }
 
   load(fresh: boolean = false) {
@@ -18,7 +18,7 @@ export class BloomManager {
       this.filter = BloomFilter.fromJSON(json);
       console.log("Bloom filter loaded.");
     } else {
-      this.filter = BloomFilter.create(50000000, 0.01);
+      this.filter = BloomFilter.create(2_000_000, 0.01);
     }
   }
 
