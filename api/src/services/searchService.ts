@@ -1,9 +1,10 @@
 import MiniSearch from "minisearch";
 import { sql } from "./db";
 
+// Only store lightweight fields in RAM. description/snippet are fetched from DB on demand.
 const miniSearchOptions = {
   fields: ["url", "title", "description", "snippet", "language"],
-  storeFields: ["url", "title", "description", "snippet", "language", "nsfw", "crawledAt"],
+  storeFields: ["url", "title", "language", "nsfw", "crawledAt"],
   idField: "url",
   searchOptions: {
     boost: { url: 10, title: 5, description: 2, snippet: 1 },
@@ -25,12 +26,59 @@ export async function loadIndex() {
         miniSearchOptions,
       );
       indexLoaded = true;
-      console.log(`[SearchService] Postgress loaded`);
+      console.log(
+        `[SearchService] Index loaded (${searchIndex.documentCount} docs)`,
+      );
     }
   } catch (error) {
     console.error(`[SearchService] Error loading index:`, error);
     indexLoaded = true;
   }
+}
+
+// Fetch description/snippet from DB for a batch of URLs
+async function hydrateResults(results: any[]): Promise<any[]> {
+  if (results.length === 0) return results;
+
+  const urls = new Set<string>();
+  for (const r of results) {
+    urls.add(r.url);
+    if (r.sitelinks) {
+      for (const sl of r.sitelinks) urls.add(sl.url);
+    }
+  }
+
+  const urlList = Array.from(urls);
+  const rows = await sql`
+    SELECT url, description, snippet FROM pages WHERE url IN ${sql(urlList)}
+  `;
+
+  const dataMap = new Map<string, { description: string; snippet: string }>();
+  for (const row of rows) {
+    dataMap.set(row.url, {
+      description: row.description,
+      snippet: row.snippet,
+    });
+  }
+
+  for (const r of results) {
+    const data = dataMap.get(r.url);
+    if (data) {
+      r.description = data.description;
+      r.snippet = data.snippet;
+    }
+    if (r.sitelinks) {
+      for (const sl of r.sitelinks) {
+        const slData = dataMap.get(sl.url);
+        if (slData) {
+          sl.description = slData.description;
+          sl.snippet = slData.snippet;
+        }
+      }
+    }
+  }
+
+  return results;
 }
 
 export async function search(
@@ -149,9 +197,13 @@ export async function search(
     }
   }
 
+  // Only hydrate the paginated slice (max ~50 results + their sitelinks)
+  const paginatedResults = groupedResults.slice(offset, offset + limit);
+  const hydratedResults = await hydrateResults(paginatedResults);
+
   return {
     total,
-    results: groupedResults.slice(offset, offset + limit),
+    results: hydratedResults,
     totalPages: Math.ceil(total / limit),
     correction,
   };
