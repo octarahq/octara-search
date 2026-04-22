@@ -6,7 +6,7 @@ const configPath = path.resolve(__dirname, "../../config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
 export const sql = postgres(config.databaseUrl, {
-  max: 100,
+  max: 20,
   idle_timeout: 20,
   onnotice: () => {},
 });
