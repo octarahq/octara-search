@@ -27,7 +27,7 @@ const WORKER_RECURSIVE = !args.includes("--norecurse");
 
 const SEED_URLS: string[] = WORKER_MODE ? [] : ["https://www.allocine.fr/"];
 const MAX_PAGES_TO_CRAWL = Number.MAX_SAFE_INTEGER;
-const CONCURRENCY = WORKER_MODE ? 50 : 150;
+const CONCURRENCY = WORKER_MODE ? 30 : 50;
 const FETCHES_PER_MIN_PER_DOMAIN = 1200;
 
 const FRESH_START = false;
@@ -416,6 +416,8 @@ async function start() {
             bloom.add(normUrl);
             missionUrls.add(normUrl);
             pagesCrawled++;
+            // Prevent missionUrls from growing unbounded
+            if (!WORKER_MODE && missionUrls.size > 10000) missionUrls.clear();
             lastPages.unshift({
               url: normUrl,
               domain: limiter.getHostname(normUrl),
