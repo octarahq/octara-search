@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const withNextIntl = createNextIntlPlugin();
 
-const API_PORT = process.env.API_PORT || 3001;
+const API_PORT = process.env.API_PORT || 4036;
 
 const nextConfig: NextConfig = {
   turbopack: {

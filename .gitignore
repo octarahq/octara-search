@@ -54,5 +54,7 @@ data/*
 /indexer/data/
 /crawler/temp/
 
+frontend/next.config.ts
+
 # Orion CLI
 .orion/
