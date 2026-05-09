@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -94,6 +95,83 @@ func main() {
 			"articles":      pagedArticles,
 		})
 	})
+
+	subService := services.NewSubdomainService(db, searchService)
+	subGroup := r.Group("/api/subdomains")
+	{
+		subGroup.GET("/", func(c *gin.Context) {
+			root := c.Query("root_domain")
+			if root == "" {
+				c.JSON(400, gin.H{"error": "root_domain is required"})
+				return
+			}
+			list, _ := subService.GetSubdomains(root)
+			c.JSON(200, gin.H{"subdomains": list})
+		})
+
+		subGroup.GET("/pages", func(c *gin.Context) {
+			host := c.Query("host")
+			exactHttp := "http://" + host
+			exactHttps := "https://" + host
+
+			rows, _ := db.Query(ctx,
+				"SELECT url, title, description, crawled_at FROM pages WHERE url LIKE $1 OR url LIKE $2 OR url = $3 OR url = $4 LIMIT 100",
+				"http://"+host+"/%", "https://"+host+"/%", exactHttp, exactHttps)
+			defer rows.Close()
+
+			var pages []services.PageInfo
+			for rows.Next() {
+				var p services.PageInfo
+				rows.Scan(&p.URL, &p.Title, &p.Description, &p.CrawledAt)
+				pages = append(pages, p)
+			}
+			c.JSON(200, gin.H{"pages": pages})
+		})
+
+		subGroup.GET("/sitemap", func(c *gin.Context) {
+			host := c.Query("host")
+			url, urls, err := subService.CheckSitemap(host)
+			if err != nil {
+				c.JSON(404, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(200, gin.H{"success": true, "url": url, "urls": urls})
+		})
+
+		subGroup.POST("/recrawl", func(c *gin.Context) {
+			c.JSON(http.StatusNotImplemented, gin.H{"error": "this feature is in development"})
+			return
+
+			var body struct {
+				Urls      []string `json:"urls"`
+				Recursive bool     `json:"recursive"`
+			}
+			if err := c.ShouldBindJSON(&body); err != nil {
+				c.JSON(400, gin.H{"error": "invalid body"})
+				return
+			}
+			subService.SpawnCrawler(body.Urls, body.Recursive)
+			c.JSON(200, gin.H{"success": true, "count": len(body.Urls)})
+		})
+
+		subGroup.DELETE("/pages", func(c *gin.Context) {
+			url := c.Query("url")
+			_, err := db.Exec(ctx, "DELETE FROM pages WHERE url = $1", url)
+			if err != nil {
+				c.JSON(500, gin.H{"error": "delete failed"})
+				return
+			}
+
+			go func() {
+				cmd := exec.Command("npm", "run", "start:indexer", "--", "--urls="+url, "--delete")
+				cmd.Dir = "../"
+				cmd.Run()
+				searchService.LoadIndex()
+			}()
+
+			c.JSON(200, gin.H{"success": true})
+		})
+	}
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
