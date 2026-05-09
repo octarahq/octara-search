@@ -32,7 +32,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/search", func(c *gin.Context) {
+	r.GET("/api/search", func(c *gin.Context) {
 		q := c.Query("q")
 		page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 		limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -46,7 +46,24 @@ func main() {
 		c.JSON(http.StatusOK, res)
 	})
 
-	r.GET("/news", func(c *gin.Context) {
+	r.GET("/api/search/autocomplete", func(c *gin.Context) {
+		q := c.Query("q")
+		limit, _ := strconv.Atoi(c.DefaultQuery("limit", "8"))
+
+		suggestions := searchService.Autocomplete(q, limit)
+		c.JSON(http.StatusOK, suggestions)
+	})
+
+	r.GET("/api/stats", func(c *gin.Context) {
+		stats := searchService.GetStats(context.Background())
+		if stats == nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "stats unavailable"})
+			return
+		}
+		c.JSON(http.StatusOK, stats)
+	})
+
+	r.GET("/api/news", func(c *gin.Context) {
 		country := c.DefaultQuery("country", "france")
 
 		pageStr := c.DefaultQuery("page", "1")

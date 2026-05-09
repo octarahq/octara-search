@@ -76,13 +76,13 @@ func connectRedis() {
 func GetNewsSource() (NewsSourceList, error) {
 	file, err := os.Open(NewsSourcePath)
 	if err != nil {
-		return emptyNewsSource, errors.New("Error while getting news source")
+		return emptyNewsSource, errors.New("Error while getting news source " + err.Error())
 	}
 	defer file.Close()
 
 	byteValue, err := io.ReadAll(file)
 	if err != nil {
-		return emptyNewsSource, errors.New("Error while parsing news source")
+		return emptyNewsSource, errors.New("Error while parsing news source " + err.Error())
 	}
 
 	var sources NewsSourceList

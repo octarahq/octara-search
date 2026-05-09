@@ -214,3 +214,74 @@ func (s *SearchService) HydrateResults(results []*SearchDocument) []*SearchDocum
 	}
 	return results
 }
+
+func (s *SearchService) Autocomplete(query string, limit int) []string {
+	s.mu.RLock()
+	if !s.indexLoaded || len(query) < 2 {
+		s.mu.RUnlock()
+		return []string{}
+	}
+	reader := s.reader
+	s.mu.RUnlock()
+
+	prefixQuery := bluge.NewPrefixQuery(strings.ToLower(query)).SetField("title")
+	req := bluge.NewTopNSearch(limit, prefixQuery)
+
+	dmi, err := reader.Search(context.Background(), req)
+	if err != nil {
+		return []string{}
+	}
+
+	var suggestions []string
+	seen := make(map[string]struct{})
+
+	next, err := dmi.Next()
+	for err == nil && next != nil && len(suggestions) < limit {
+		var title string
+		next.VisitStoredFields(func(field string, value []byte) bool {
+			if field == "title" {
+				title = string(value)
+			}
+			return true
+		})
+
+		if title != "" {
+			key := strings.ToLower(title)
+			if _, ok := seen[key]; !ok {
+				seen[key] = struct{}{}
+				suggestions = append(suggestions, title)
+			}
+		}
+
+		next, err = dmi.Next()
+	}
+
+	return suggestions
+}
+
+func (s *SearchService) GetStats(ctx context.Context) map[string]interface{} {
+	var pagesCount int
+	var indexSize int
+
+	err := s.db.QueryRow(ctx, "SELECT COUNT(*)::int FROM pages").Scan(&pagesCount)
+	if err != nil {
+		pagesCount = 0
+	}
+
+	err = s.db.QueryRow(ctx, "SELECT LENGTH(index_data)::int FROM search_index WHERE id = 1").Scan(&indexSize)
+	if err != nil {
+		indexSize = 0
+	}
+
+	s.mu.RLock()
+	count, _ := s.reader.Count()
+	ready := s.indexLoaded
+	s.mu.RUnlock()
+
+	return map[string]interface{}{
+		"total_pages":   pagesCount,
+		"index_ready":   ready,
+		"index_size":    indexSize,
+		"total_indexed": count,
+	}
+}
