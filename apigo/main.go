@@ -3,19 +3,47 @@ package main
 import (
 	"api/config"
 	"api/services"
+	"context"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
 func main() {
 	config.Init()
 	services.StartScheduler()
 
+	ctx := context.Background()
+
+	db, err := pgx.Connect(ctx, config.GetEnv("DATABASE_URL"))
+	if err != nil {
+		fmt.Println("Error: Cannont connect to DB")
+	}
+	defer db.Close(ctx)
+
+	searchService := services.NewSearchService(db)
+	go searchService.LoadIndex()
+
 	r := gin.Default()
+
+	r.GET("/search", func(c *gin.Context) {
+		q := c.Query("q")
+		page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+		limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+		safe := c.DefaultQuery("safe", "moderate")
+
+		res, err := searchService.Search(q, page, limit, safe)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, res)
+	})
 
 	r.GET("/news", func(c *gin.Context) {
 		country := c.DefaultQuery("country", "france")
