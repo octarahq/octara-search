@@ -110,7 +110,7 @@ export default async function SearchPage({
 
   if (query) {
     try {
-      const baseUrl = process.env.API_URL || "http://localhost:3001";
+      const baseUrl = process.env.API_ENDPOINT || "http://localhost:4036";
       const searchUrl = new URL(`${baseUrl}/api/search`);
       searchUrl.searchParams.append("q", query);
       searchUrl.searchParams.append("page", page.toString());
