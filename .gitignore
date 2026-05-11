@@ -1,0 +1,5 @@
+.env
+.ssh/
+octara-bot
+# Orion CLI
+.orion/
