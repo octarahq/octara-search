@@ -6,10 +6,8 @@ import (
 	"net/url"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
-	"github.com/blugelabs/bluge"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -26,114 +24,59 @@ type SearchDocument struct {
 }
 
 type SearchService struct {
-	db          *pgx.Conn
-	writer      *bluge.Writer
-	reader      *bluge.Reader
-	indexLoaded bool
-	mu          sync.RWMutex
+	db *pgx.Conn
 }
 
 func NewSearchService(dbConn *pgx.Conn) *SearchService {
-	config := bluge.InMemoryOnlyConfig()
-
-	writer, err := bluge.OpenWriter(config)
-	if err != nil {
-		panic(fmt.Sprintf("Impossible d'ouvrir le writer Bluge: %v", err))
-	}
-
-	return &SearchService{
-		db:     dbConn,
-		writer: writer,
-	}
-}
-
-func (s *SearchService) LoadIndex() error {
-	rows, err := s.db.Query(context.Background(), "SELECT url, title, language, nsfw FROM pages")
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	batch := bluge.NewBatch()
-	for rows.Next() {
-		var doc SearchDocument
-		if err := rows.Scan(&doc.URL, &doc.Title, &doc.Language, &doc.NSFW); err != nil {
-			continue
-		}
-
-		bDoc := bluge.NewDocument(doc.URL).
-			AddField(bluge.NewTextField("title", doc.Title).StoreValue()).
-			AddField(bluge.NewTextField("url", doc.URL).StoreValue()).
-			AddField(bluge.NewKeywordField("language", doc.Language).StoreValue()).
-			AddField(bluge.NewStoredOnlyField("nsfw", []byte(fmt.Sprintf("%t", doc.NSFW))))
-
-		batch.Update(bDoc.ID(), bDoc)
-	}
-
-	if err := s.writer.Batch(batch); err != nil {
-		return err
-	}
-
-	s.reader, _ = s.writer.Reader()
-	s.indexLoaded = true
-	fmt.Println("[Search] Index chargé avec succès")
-	return nil
+	return &SearchService{db: dbConn}
 }
 
 func (s *SearchService) Search(query string, page, limit int, safeSearch string) (map[string]interface{}, error) {
 	startTime := time.Now()
-	s.mu.RLock()
-	if !s.indexLoaded {
-		s.mu.RUnlock()
-		return map[string]interface{}{"results": []interface{}{}, "total": 0}, nil
+
+	if strings.TrimSpace(query) == "" {
+		return map[string]interface{}{"results": []interface{}{}, "total": 0, "timeMs": 0}, nil
 	}
-	reader := s.reader
-	s.mu.RUnlock()
 
-	q := bluge.NewBooleanQuery()
-	tq := bluge.NewMatchQuery(query).SetField("title").SetBoost(5)
-	uq := bluge.NewMatchQuery(query).SetField("url").SetBoost(10)
-	q.AddShould(tq, uq)
+	offset := (page - 1) * limit
 
-	req := bluge.NewTopNSearch(400, q)
-	dmi, err := reader.Search(context.Background(), req)
+	rows, err := s.db.Query(context.Background(), `
+		SELECT
+			url, title, description, snippet, language, nsfw,
+			ts_rank(search_vector, plainto_tsquery('simple', $1)) AS rank
+		FROM pages
+		WHERE search_vector @@ plainto_tsquery('simple', $1)
+		ORDER BY
+			CASE WHEN url ILIKE '%' || $1 || '%' THEN 2 ELSE 0 END +
+			CASE WHEN title ILIKE '%' || $1 || '%' THEN 1 ELSE 0 END +
+			ts_rank(search_vector, plainto_tsquery('simple', $1)) DESC
+		LIMIT $2 OFFSET $3
+	`, query, limit*20, offset)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("search query failed: %v", err)
 	}
+	defer rows.Close()
 
 	var all []*SearchDocument
-	next, err := dmi.Next()
-	for err == nil && next != nil {
+	for rows.Next() {
 		var doc SearchDocument
-		next.VisitStoredFields(func(field string, value []byte) bool {
-			switch field {
-			case "title":
-				doc.Title = string(value)
-			case "url":
-				doc.URL = string(value)
-			case "nsfw":
-				doc.NSFW = string(value) == "true"
-			}
-			return true
-		})
-
-		doc.Score = next.Score
-		lq := strings.ToLower(query)
-		if strings.Contains(strings.ToLower(doc.URL), lq) {
-			doc.Score *= 5
+		var rank float64
+		err := rows.Scan(
+			&doc.URL, &doc.Title, &doc.Description, &doc.Snippet,
+			&doc.Language, &doc.NSFW, &rank,
+		)
+		if err != nil {
+			continue
 		}
+		doc.Score = rank
 
 		if safeSearch == "strict" && doc.NSFW {
-		} else {
-			if safeSearch == "moderate" && doc.NSFW {
-				doc.Blur = true
-			}
-			all = append(all, &doc)
+			continue
 		}
-		next, err = dmi.Next()
+		if safeSearch == "moderate" && doc.NSFW {
+			doc.Blur = true
+		}
+		all = append(all, &doc)
 	}
 
 	sort.Slice(all, func(i, j int) bool { return all[i].Score > all[j].Score })
@@ -154,134 +97,59 @@ func (s *SearchService) Search(query string, page, limit int, safeSearch string)
 	}
 
 	total := len(grouped)
-	offset := (page - 1) * limit
-	if offset > total {
-		offset = total
-	}
-	end := offset + limit
+	start := 0
+	end := limit
 	if end > total {
 		end = total
 	}
 
-	paged := grouped[offset:end]
-
-	final := s.HydrateResults(paged)
-	endTime := time.Now()
-
-	durationMs := endTime.UnixMilli() - startTime.UnixMilli()
+	durationMs := time.Since(startTime).Milliseconds()
 
 	return map[string]interface{}{
 		"total":       total,
 		"total_pages": (total + limit - 1) / limit,
 		"timeMs":      durationMs,
-		"results":     final,
+		"results":     grouped[start:end],
 	}, nil
 }
 
-func (s *SearchService) HydrateResults(results []*SearchDocument) []*SearchDocument {
-	if len(results) == 0 {
-		return results
+func (s *SearchService) Autocomplete(query string, limit int) []string {
+	if len(strings.TrimSpace(query)) < 2 {
+		return []string{}
 	}
 
-	urls := []string{}
-	for _, r := range results {
-		urls = append(urls, r.URL)
-		for _, sl := range r.Sitelinks {
-			urls = append(urls, sl.URL)
-		}
-	}
-
-	rows, err := s.db.Query(context.Background(), "SELECT url, description, snippet FROM pages WHERE url = ANY($1)", urls)
+	rows, err := s.db.Query(context.Background(), `
+		SELECT DISTINCT title
+		FROM pages
+		WHERE title ILIKE $1 || '%'
+		ORDER BY title
+		LIMIT $2
+	`, query, limit)
 	if err != nil {
-		return results
+		return []string{}
 	}
 	defer rows.Close()
 
-	data := make(map[string][2]string)
-	for rows.Next() {
-		var u, d, sn string
-		rows.Scan(&u, &d, &sn)
-		data[u] = [2]string{d, sn}
-	}
-
-	for _, r := range results {
-		r.Description = data[r.URL][0]
-		r.Snippet = data[r.URL][1]
-		for _, sl := range r.Sitelinks {
-			sl.Description = data[sl.URL][0]
-			sl.Snippet = data[sl.URL][1]
-		}
-	}
-	return results
-}
-
-func (s *SearchService) Autocomplete(query string, limit int) []string {
-	s.mu.RLock()
-	if !s.indexLoaded || len(query) < 2 {
-		s.mu.RUnlock()
-		return []string{}
-	}
-	reader := s.reader
-	s.mu.RUnlock()
-
-	prefixQuery := bluge.NewPrefixQuery(strings.ToLower(query)).SetField("title")
-	req := bluge.NewTopNSearch(limit, prefixQuery)
-
-	dmi, err := reader.Search(context.Background(), req)
-	if err != nil {
-		return []string{}
-	}
-
 	var suggestions []string
-	seen := make(map[string]struct{})
-
-	next, err := dmi.Next()
-	for err == nil && next != nil && len(suggestions) < limit {
+	for rows.Next() {
 		var title string
-		next.VisitStoredFields(func(field string, value []byte) bool {
-			if field == "title" {
-				title = string(value)
-			}
-			return true
-		})
-
-		if title != "" {
-			key := strings.ToLower(title)
-			if _, ok := seen[key]; !ok {
-				seen[key] = struct{}{}
-				suggestions = append(suggestions, title)
-			}
+		if err := rows.Scan(&title); err == nil && title != "" {
+			suggestions = append(suggestions, title)
 		}
-
-		next, err = dmi.Next()
 	}
-
 	return suggestions
 }
 
 func (s *SearchService) GetStats(ctx context.Context) map[string]interface{} {
 	var pagesCount int
-	var indexSize int
+	var indexedCount int
 
-	err := s.db.QueryRow(ctx, "SELECT COUNT(*)::int FROM pages").Scan(&pagesCount)
-	if err != nil {
-		pagesCount = 0
-	}
-
-	err = s.db.QueryRow(ctx, "SELECT LENGTH(index_data)::int FROM search_index WHERE id = 1").Scan(&indexSize)
-	if err != nil {
-		indexSize = 0
-	}
-
-	s.mu.RLock()
-	count, _ := s.reader.Count()
-	ready := s.indexLoaded
-	s.mu.RUnlock()
+	s.db.QueryRow(ctx, "SELECT COUNT(*)::int FROM pages").Scan(&pagesCount)
+	s.db.QueryRow(ctx, "SELECT COUNT(*)::int FROM pages WHERE search_vector IS NOT NULL").Scan(&indexedCount)
 
 	return map[string]interface{}{
 		"total_pages":   pagesCount,
-		"index_ready":   ready,
-		"index_size":    indexSize,
-		"total_indexed": count,
+		"total_indexed": indexedCount,
+		"index_ready":   indexedCount > 0,
 	}
 }

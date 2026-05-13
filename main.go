@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"math"
 	"net/http"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -28,7 +27,6 @@ func main() {
 	defer db.Close(ctx)
 
 	searchService := services.NewSearchService(db)
-	go searchService.LoadIndex()
 
 	r := gin.Default()
 
@@ -178,13 +176,6 @@ func main() {
 				c.JSON(500, gin.H{"error": "delete failed"})
 				return
 			}
-
-			go func() {
-				cmd := exec.Command("npm", "run", "start:indexer", "--", "--urls="+url, "--delete")
-				cmd.Dir = "../"
-				cmd.Run()
-				searchService.LoadIndex()
-			}()
 
 			c.JSON(200, gin.H{"success": true})
 		})
